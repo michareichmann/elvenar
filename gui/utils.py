@@ -102,9 +102,7 @@ def label(txt, color=None, bold=False, font=None, font_size=FontSize * 1.5, bg_c
 def fig_label(p: Path, align=CEN, xpos=0, scale=None):
     lb = my_widget(QLabel, align, xpos)
     f = figure(p)
-    if scale is not None:
-        f.scaled(f.size() * scale)
-    lb.setPixmap(figure(p))
+    lb.setPixmap(f if scale is None else f.scaled(f.size() * scale))
     return lb
 
 
