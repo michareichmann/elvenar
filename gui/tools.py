@@ -1,12 +1,15 @@
-from time import sleep
+from time import sleep, time
 
+import numpy as np
 from PyQt5.QtCore import QThread
-from PyQt5.QtWidgets import QHBoxLayout, QGridLayout
+from PyQt5.QtWidgets import QHBoxLayout, QGridLayout, QVBoxLayout, QProgressBar
 
 from gui.group_box import GroupBox
 from gui.utils import *
 from src.elvenar import Elvenar
+from utils.helpers import Dir
 
+FigDir = Dir.joinpath('figures')
 Elvenar = Elvenar()
 set_button_height(25)
 
@@ -21,29 +24,50 @@ class ToolBox(GroupBox):
         super().__init__()
 
         self.FarmButton = button('farm', self.farm)
-        self.CollectFarmButton = button('collect + farm', partial(self.farm, 0, True))
+        self.CollectFarmButton = button('collect + farm', partial(self.farm, True))
+        self.TCheckBoxes = self.create_t_check_boxes()
+        self.InfoBox = line_edit()
 
         self.FarmingThread = FarmingThread(self)
+        self.T0 = None
+        self.Duration = None
 
         self.Layout = self.create_layout()
-        self.create_widgets()
+        self.create_upper_box()
+        self.PBar: QProgressBar = self.create_progress_bar()
 
     def update(self):
-        ...
+        if self.T0 is not None:
+            self.PBar.setValue(int(np.round((time() - self.T0) / self.Duration * 100)))
 
     def format(self):
         ...
 
+    @property
+    def tool_select(self):
+        return next((i for i, cb in enumerate(self.TCheckBoxes) if cb.isChecked()), 0)
+
     # ----------------------------------
     # region LAYOUT & WIDGETS
-    def create_layout(self) -> QHBoxLayout:
-        self.setLayout(QHBoxLayout(self))
+    def create_layout(self) -> QVBoxLayout:
+        self.setLayout(QVBoxLayout(self))
         self.layout().setContentsMargins(4, 4, 4, 4)
         return self.layout()  # noqa
 
+    def create_upper_box(self):
+        layout = QHBoxLayout()
+        layout.addLayout(self.create_tool_box())
+        layout.addLayout(self.create_t_selector())
+        self.Layout.addLayout(layout)
+
+    def create_progress_bar(self):
+        pbar = QProgressBar(self)
+        self.Layout.addWidget(pbar)
+        return pbar
+
     def create_widgets(self):
         self.create_tool_box()
-        # self.create_time_select()
+        self.create_t_selector()
 
     def collect(self):
         Elvenar.go_to_game()
@@ -51,15 +75,18 @@ class ToolBox(GroupBox):
 
     def start_production(self):
         Elvenar.go_to_game()
-        Elvenar.start_production()
+        Elvenar.start_production(self.tool_select)
 
-    def collect_start(self, i=0):
+    def collect_start(self):
         self.collect()
         sleep(2)
-        Elvenar.start_production(i)
+        Elvenar.start_production(self.tool_select)
 
-    def farm(self, i=0, collect_first=False):
-        self.FarmingThread.configure(i, collect_first)
+    def farm(self, collect_first=False):
+        self.T0 = time()
+        self.Duration = Elvenar.Times[self.tool_select] * 60
+
+        self.FarmingThread.configure(self.tool_select, collect_first)
         self.FarmButton.setEnabled(False)
         self.CollectFarmButton.setEnabled(False)
 
@@ -67,22 +94,47 @@ class ToolBox(GroupBox):
         self.FarmingThread.finished.connect(partial(self.CollectFarmButton.setEnabled, True))
         self.FarmingThread.start()
 
+    def test(self):
+        self.InfoBox.clear()
+        self.InfoBox.insert('Hello')
+
     def create_tool_box(self):
         layout = QGridLayout()
-        layout.addWidget(button('collect', self.collect), 0, 0)
-        layout.addWidget(label('test'), 0, 1, CEN)
-        layout.addWidget(button('start production', self.start_production), 1, 0)
-        layout.addWidget(button('collect + start', self.collect_start), 2, 0)
-        layout.addWidget(self.FarmButton, 3, 0)
-        layout.addWidget(self.CollectFarmButton, 4, 0)
-        layout.addWidget(button('stop farming', self.FarmingThread.terminate), 4, 1)
-        self.Layout.addLayout(layout)
+        layout.addWidget(button('test', self.test), 0, 1)
+        layout.addWidget(self.FarmButton, 0, 0)
+        layout.addWidget(self.CollectFarmButton, 1, 0)
+        layout.addWidget(button('stop farming', self.FarmingThread.terminate), 1, 1)
+        layout.addWidget(label('Info:'), 2, 0, RIGHT)
+        layout.addWidget(self.InfoBox, 2, 1, RIGHT)
+        return layout
+
+    def create_t_selector(self):
+        layout = QGridLayout()
+        layout.addWidget(fig_label(FigDir.joinpath('time.png')), 0, 1, CEN)
+        layout.addWidget(fig_label(FigDir.joinpath('time.png')), 0, 4, CEN)
+        for i in range(6):
+            layout.addWidget(label(Elvenar.TStrings[i]), i % 3 + 1, 1 if i < 3 else 4, RIGHT if i < 3 else LEFT)
+            layout.addWidget(fig_label(FigDir.joinpath(f'{i}.png'), scale=.5), i % 3 + 1, 0 if i < 3 else 5, CEN)
+            layout.addWidget(self.TCheckBoxes[i], i % 3 + 1, 2 if i < 3 else 3)
+        return layout
+
     # endregion
     # ----------------------------------
+    def create_t_check_boxes(self):
+        self.TCheckBoxes = [check_box() for _ in range(6)]
+        self.TCheckBoxes[0].setChecked(True)
+
+        def uncheck_others(ibox):
+            [cb.setChecked(False) for cb in self.TCheckBoxes if ibox.isChecked() and cb.isChecked() and ibox != cb]
+
+        for box in self.TCheckBoxes:
+            box.toggled.connect(partial(uncheck_others, box))
+        return self.TCheckBoxes
 
 
 class FarmingThread(QThread):
 
+    # TODO: change time while in loop
     Time = 0
     CollectAtStart = True
 
