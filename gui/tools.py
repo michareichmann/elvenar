@@ -1,6 +1,8 @@
-from time import sleep, time
+from datetime import timedelta
+from time import time
 
 import numpy as np
+
 from PyQt5.QtCore import QThread
 from PyQt5.QtWidgets import QHBoxLayout, QGridLayout, QVBoxLayout, QProgressBar
 
@@ -26,19 +28,24 @@ class ToolBox(GroupBox):
         self.FarmButton = button('farm', self.farm)
         self.CollectFarmButton = button('collect + farm', partial(self.farm, True))
         self.TCheckBoxes = self.create_t_check_boxes()
-        self.InfoBox = line_edit()
+        self.InfoLabel = label('x')
 
         self.FarmingThread = FarmingThread(self)
-        self.T0 = None
-        self.Duration = None
 
         self.Layout = self.create_layout()
         self.create_upper_box()
         self.PBar: QProgressBar = self.create_progress_bar()
 
     def update(self):
-        if self.T0 is not None:
-            self.PBar.setValue(int(np.round((time() - self.T0) / self.Duration * 100)))
+        if Elvenar.T0 is not None:
+            duration = timedelta(minutes=Elvenar.Times[Elvenar.SelectedInd])
+            elapsed_time = timedelta(seconds=int(np.round(time() - Elvenar.T0)))
+            if elapsed_time < duration:
+                self.PBar.setFormat(str(duration - elapsed_time))
+                self.PBar.setValue(int(np.round(elapsed_time / duration * 100)))
+            else:
+                self.PBar.reset()
+        self.InfoLabel.setText(f'{Elvenar.NIter}')
 
     def format(self):
         ...
@@ -69,43 +76,33 @@ class ToolBox(GroupBox):
         self.create_tool_box()
         self.create_t_selector()
 
-    def collect(self):
-        Elvenar.go_to_game()
-        Elvenar.collect()
+    def farm(self, collect_at_start=False):
 
-    def start_production(self):
-        Elvenar.go_to_game()
-        Elvenar.start_production(self.tool_select)
-
-    def collect_start(self):
-        self.collect()
-        sleep(2)
-        Elvenar.start_production(self.tool_select)
-
-    def farm(self, collect_first=False):
-        self.T0 = time()
-        self.Duration = Elvenar.Times[self.tool_select] * 60
-
-        self.FarmingThread.configure(self.tool_select, collect_first)
         self.FarmButton.setEnabled(False)
         self.CollectFarmButton.setEnabled(False)
 
+        FarmingThread.CollectAtStart = collect_at_start
         self.FarmingThread.finished.connect(partial(self.FarmButton.setEnabled, True))
         self.FarmingThread.finished.connect(partial(self.CollectFarmButton.setEnabled, True))
+        self.FarmingThread.finished.connect(Elvenar.reset)
+        self.FarmingThread.finished.connect(self.PBar.reset)
         self.FarmingThread.start()
 
     def test(self):
-        self.InfoBox.clear()
-        self.InfoBox.insert('Hello')
+        # self.InfoLabel.setText('Hello')
+        self.InfoLabel.setText(str(Elvenar.NIter))
+        self.PBar.setValue(10)
+        self.PBar.setFormat('bla')
 
     def create_tool_box(self):
         layout = QGridLayout()
-        layout.addWidget(button('test', self.test), 0, 1)
-        layout.addWidget(self.FarmButton, 0, 0)
-        layout.addWidget(self.CollectFarmButton, 1, 0)
-        layout.addWidget(button('stop farming', self.FarmingThread.terminate), 1, 1)
-        layout.addWidget(label('Info:'), 2, 0, RIGHT)
-        layout.addWidget(self.InfoBox, 2, 1, RIGHT)
+        layout.addWidget(label('', self.test), 0, 0)  # spacing
+        layout.addWidget(button('test', self.test), 1, 1)
+        layout.addWidget(self.FarmButton, 1, 0)
+        layout.addWidget(self.CollectFarmButton, 2, 0)
+        layout.addWidget(button('stop farming', self.FarmingThread.terminate), 2, 1)
+        layout.addWidget(label('Iterations:'), 3, 0, RIGHT)
+        layout.addWidget(self.InfoLabel, 3, 1, LEFT)
         return layout
 
     def create_t_selector(self):
@@ -129,20 +126,14 @@ class ToolBox(GroupBox):
 
         for box in self.TCheckBoxes:
             box.toggled.connect(partial(uncheck_others, box))
+            box.toggled.connect(lambda: Elvenar.select_time(self.tool_select))
         return self.TCheckBoxes
 
 
 class FarmingThread(QThread):
 
-    # TODO: change time while in loop
-    Time = 0
     CollectAtStart = True
 
     def run(self):
         Elvenar.go_to_game()
-        Elvenar.farm(FarmingThread.Time, FarmingThread.CollectAtStart)
-
-    @staticmethod
-    def configure(t, collect_at_start):
-        FarmingThread.Time = t
-        FarmingThread.CollectAtStart = collect_at_start
+        Elvenar.farm(collect_at_start=FarmingThread.CollectAtStart)
