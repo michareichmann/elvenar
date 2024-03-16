@@ -46,7 +46,7 @@ class Elvenar:
 
     @staticmethod
     def collect(*pos, wait=.1):
-        Elvenar.Mouse.press(*pos[0])
+        Elvenar.Mouse.press(*pos[0], wait=wait)
         for p in pos:
             Elvenar.Mouse.move(*p, wait=wait)
         Elvenar.Mouse.release(*pos[-1])
@@ -67,31 +67,56 @@ class Elvenar:
                     self.collect(*pos)
                     sleep(2)
                 self.start_production(pos[0])
-                self.Mouse.move(0, 0)  # move mouse away for pic identification
+                self.Mouse.move(0, 600)  # move mouse away for pic identification
             sleep(Elvenar.Times[Elvenar.SelectedInd] * 60 - 10)
             say(Dir.joinpath('audio', '15sec.mp3'), '15 seconds left!')
             sleep(15)
 
     @staticmethod
-    def find_workshops(confidence=.85):
+    def locate_all_(pic, confidence=.99):
         from pyautogui import locateAllOnScreen
-        ws_dir = Elvenar.FigDir.joinpath('ws')
         try:
-            v = sum((list(locateAllOnScreen(str(p), confidence=confidence)) for p in ws_dir.glob('*.png')), start=[])
+            return list(locateAllOnScreen(str(pic), confidence=confidence))
+        except Exception as e:
+            print(e)
+            return []
+
+    @staticmethod
+    def locate_all(*pics, confidence=.99):
+        return sum((Elvenar.locate_all_(p, confidence) for p in pics), start=[])
+
+    @staticmethod
+    def locate(pic, confidence=.99):
+        from pyautogui import locateOnScreen
+        try:
+            return locateOnScreen(str(pic), confidence=confidence)
+        except Exception as e:
+            print(e)
+            return None
+
+    @staticmethod
+    def find_workshops(confidence=.85):
+        try:
+            v = Elvenar.locate_all(*Elvenar.FigDir.joinpath('ws').glob('*.png'), confidence=confidence)
             pos = [(int(b.left + b.width / 2), int(b.top + b.height)) for b in v]
-            return [p for i, p in enumerate(pos) if i == 0 or abs(p[0] - pos[i - 1][0] + p[1] - pos[i - 1][1]) > 5]
+            return [p for i, p in enumerate(pos) if i == 0 or abs(p[0] - pos[i - 1][0] + p[1] - pos[i - 1][1]) > 5]  # remove duplicates
         except Exception as e:
             print(e)
             return []
 
     @staticmethod
     def find_tool_time():
-        from pyautogui import locateOnScreen, ImageNotFoundException
-        try:
-            loc = locateOnScreen(str(Elvenar.FigDir.joinpath('tool-times', f'{Elvenar.SelectedInd}.png')), confidence=.8)
-            return loc.left + loc.width, loc.top + loc.height
-        except ImageNotFoundException:
-            return 5, 5
+        box = Elvenar.locate(Elvenar.FigDir.joinpath('tool-times', f'{Elvenar.SelectedInd}.png'), confidence=.8)
+        return (0, 0) if box is None else box.left + box.width, box.top + box.height
 
-    def motivate(self):
-        ...
+    @staticmethod
+    def motivate():
+        v = Elvenar.locate_all(*(Elvenar.FigDir.joinpath(f'hands{i}.png') for i in ['', '-gold']), confidence=.99)
+        for pos in [(int(b.left + b.width / 2), int(b.top + b.height / 2)) for b in v]:
+            Elvenar.Mouse.left_click(*pos, wait=.5)
+            for pic in [Elvenar.FigDir.joinpath(f'{i}.png') for i in ['culture', 'money', 'construct']]:
+                box = Elvenar.locate(pic, confidence=.9)
+                if box is not None:
+                    Elvenar.Mouse.left_click(box.left, box.top, wait=.3)
+                    break
+
