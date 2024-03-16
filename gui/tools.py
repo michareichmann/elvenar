@@ -89,15 +89,13 @@ class ToolBox(GroupBox):
         self.FarmingThread.start()
 
     def test(self):
-        # self.InfoLabel.setText('Hello')
-        self.InfoLabel.setText(str(Elvenar.NIter))
-        self.PBar.setValue(10)
-        self.PBar.setFormat('bla')
+        print('hello')
 
     def create_tool_box(self):
         layout = QGridLayout()
-        layout.addWidget(label('', self.test), 0, 0)  # spacing
-        layout.addWidget(button('test', self.test), 1, 1)
+        # layout.addWidget(label('', self.test), 0, 0)  # spacing
+        layout.addWidget(button('test', self.test), 0, 0)
+        layout.addWidget(button('help', Elvenar.motivate), 1, 1)
         layout.addWidget(self.FarmButton, 1, 0)
         layout.addWidget(self.CollectFarmButton, 2, 0)
         layout.addWidget(button('stop farming', self.FarmingThread.terminate), 2, 1)
