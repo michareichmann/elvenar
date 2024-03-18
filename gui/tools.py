@@ -29,6 +29,7 @@ class ToolBox(GroupBox):
         self.CollectFarmButton = button('collect + farm', partial(self.farm, True))
         self.TCheckBoxes = self.create_t_check_boxes()
         self.InfoLabel = label('x')
+        self.ToolLabel = label('0')
 
         self.FarmingThread = FarmingThread(self)
 
@@ -46,6 +47,7 @@ class ToolBox(GroupBox):
             else:
                 self.PBar.reset()
         self.InfoLabel.setText(f'{Elvenar.NIter}')
+        self.ToolLabel.setText(f'{Elvenar.CollectedTools}')
 
     def format(self):
         ...
@@ -101,6 +103,8 @@ class ToolBox(GroupBox):
         layout.addWidget(button('stop farming', self.FarmingThread.terminate), 2, 1)
         layout.addWidget(label('Iterations:'), 3, 0, RIGHT)
         layout.addWidget(self.InfoLabel, 3, 1, LEFT)
+        layout.addWidget(label('Collected:'), 4, 0, RIGHT)
+        layout.addWidget(self.ToolLabel, 4, 1, LEFT)
         return layout
 
     def create_t_selector(self):

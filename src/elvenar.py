@@ -30,6 +30,7 @@ class Elvenar:
     def reset():
         Elvenar.NIter = 0
         Elvenar.T0 = None
+        Elvenar.CollectedTools = 0
 
     @staticmethod
     def select_time(t: int):
