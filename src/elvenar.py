@@ -1,8 +1,13 @@
+import re
 from time import sleep, time
+
+import numpy as np
+from PIL import Image
 
 from user_input.keys import Keys
 from user_input.mouse import Mouse
 from utils.helpers import say, Dir
+from utils.classes import NumStr
 
 
 class Elvenar:
@@ -12,6 +17,7 @@ class Elvenar:
     Times = [5, 15, 60, 3 * 60, 9 * 60, 24 * 60]  # in minutes
     TStrings = ['5 min', '15 min', '1 hr', '3 hrs', '9 hrs', '1 d']
     NIter = 0
+    CollectedTools = 0
     T0 = None
     Mouse = Mouse()
     Keys = Keys()
@@ -46,11 +52,13 @@ class Elvenar:
 
     @staticmethod
     def collect(*pos, wait=.1):
+        old_count = Elvenar.read_tool_count()
         Elvenar.Mouse.press(*pos[0], wait=wait)
         for p in pos:
             Elvenar.Mouse.move(*p, wait=wait)
         Elvenar.Mouse.release(*pos[-1])
         Elvenar.NIter += 1
+        Elvenar.CollectedTools = NumStr(Elvenar.read_tool_count() - old_count)
 
     @staticmethod
     def start_production(pos):
@@ -60,6 +68,7 @@ class Elvenar:
 
     def farm(self, collect_at_start=False):
         Elvenar.NIter = 0
+        Elvenar.CollectedTools = 0
         while True:
             pos = self.find_workshops()
             if len(pos) > 0:
@@ -119,4 +128,20 @@ class Elvenar:
                 if box is not None:
                     Elvenar.Mouse.left_click(box.left, box.top, wait=.3)
                     break
+
+    @staticmethod
+    def read_tool_count(threshold=150):
+        try:
+            from pytesseract import image_to_string
+            from pyautogui import screenshot
+            box = Elvenar.locate(Elvenar.FigDir.joinpath('black-tools.png'))
+            r = np.array([box.left + box.width, box.top, int(2.5 * box.width), box.height]).tolist()
+            x = np.array(screenshot(region=r).convert('L'))  # grayscale img as array
+            black, white = x >= threshold, x < threshold
+            x[black] = 0
+            x[white] = 255
+            return NumStr(re.sub('[^KMG0-9.]+', '', image_to_string(Image.fromarray(x))))
+        except Exception as err:
+            print(err)
+
 

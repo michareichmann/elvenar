@@ -3,3 +3,5 @@ PyQt5
 matplotlib
 qdarkstyle
 pyautogui
+PIL
+pytesseract
