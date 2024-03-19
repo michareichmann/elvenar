@@ -44,15 +44,16 @@ class Elvenar:
         Elvenar.Mouse.left_click(*(box.left, box.top) if box is not None else (0, 2222), wait=.2)
 
     @staticmethod
-    def go_to_game():
+    def go_to_city():
         call('wmctrl -a "Google Chrome"', shell=True)
         sleep(.1)
         box = Elvenar.locate(Elvenar.FigDir.joinpath('browser-icon.png'), region=(0, 0, 2000, 100), confidence=.8)
         Elvenar.Mouse.left_click(box.left + box.width, box.top + box.height // 2)
+        Elvenar.Keys.tap('c', wait=.5)
         Elvenar.activate()
 
     def zoom_in(self, n=5):
-        self.go_to_game()  # only for testing
+        self.go_to_city()  # only for testing
         self.Keys.tap('+', n=n)
 
     def zoom_out(self, n=5):
@@ -83,8 +84,8 @@ class Elvenar:
         Elvenar.CollectedTools = 0
         while True:
             active_win = getoutput('xprop -root | grep _NET_ACTIVE_WINDOW | head -1 | cut -f5 -d " "')
-            Elvenar.go_to_game()
-            sleep(5)  # it may take some time until the game refreshes
+            Elvenar.go_to_city()
+            sleep(10)  # it may take some time until the game refreshes
             pos = self.find_workshops()
             if len(pos) > 0:
                 if collect_at_start or Elvenar.NIter > 0:
@@ -95,7 +96,7 @@ class Elvenar:
             call(f'wmctrl -ia {active_win}', shell=True)
             sleep(Elvenar.Times[Elvenar.SelectedInd] * 60 - 14)
             say(Dir.joinpath('audio', '15sec.mp3'), '15 seconds left!')
-            sleep(10)
+            sleep(5)
 
     @staticmethod
     def locate_all_(pic, confidence=.99):
