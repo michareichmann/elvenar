@@ -37,7 +37,7 @@ class Gui(QMainWindow):
         self.show()
 
     def configure(self):
-        self.setGeometry(1000, 500, Gui.Width, Gui.Height)
+        self.setGeometry(1369, 794, Gui.Width, Gui.Height)
         self.setWindowTitle(Gui.Title)
         self.setWindowIcon(QIcon(str(Dir.joinpath('figures', 'icoc.png'))))
         self.setWindowFlags(Qt.WindowStaysOnTopHint)
