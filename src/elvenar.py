@@ -96,10 +96,10 @@ class Elvenar:
         return sum((Elvenar.locate_all_(p, confidence) for p in pics), start=[])
 
     @staticmethod
-    def locate(pic, confidence=.99):
-        from pyautogui import locateOnScreen
+    def locate(pic, confidence=.99, region=None):
+        from pyautogui import locateOnScreen, locate, screenshot
         try:
-            return locateOnScreen(str(pic), confidence=confidence)
+            return locateOnScreen(str(pic), confidence=confidence) if region is None else locate(str(pic), screenshot(region=region), confidence=confidence)
         except Exception as e:
             print(e)
             return None
