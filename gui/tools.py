@@ -137,5 +137,4 @@ class FarmingThread(QThread):
     CollectAtStart = True
 
     def run(self):
-        Elvenar.go_to_game()
         Elvenar.farm(collect_at_start=FarmingThread.CollectAtStart)

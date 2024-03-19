@@ -9,6 +9,8 @@ from user_input.mouse import Mouse
 from utils.helpers import say, Dir
 from utils.classes import NumStr
 
+from subprocess import call, getoutput
+
 
 class Elvenar:
 
@@ -36,10 +38,18 @@ class Elvenar:
     def select_time(t: int):
         Elvenar.SelectedInd = t
 
-    def go_to_game(self):
-        # TODO find smarter solution (open chrome with specific tab?)
-        self.Mouse.left_click(0, 1078, wait=.2)
-        # self.Keys.press_alt_tab(wait=.4)
+    @staticmethod
+    def activate():
+        box = Elvenar.locate(Elvenar.FigDir.joinpath('path.png'))
+        Elvenar.Mouse.left_click(*(box.left, box.top) if box is not None else (0, 2222), wait=.2)
+
+    @staticmethod
+    def go_to_game():
+        call('wmctrl -a "Google Chrome"', shell=True)
+        sleep(.1)
+        box = Elvenar.locate(Elvenar.FigDir.joinpath('browser-icon.png'), region=(0, 0, 2000, 100), confidence=.8)
+        Elvenar.Mouse.left_click(box.left + box.width, box.top + box.height // 2)
+        Elvenar.activate()
 
     def zoom_in(self, n=5):
         self.go_to_game()  # only for testing
@@ -59,7 +69,8 @@ class Elvenar:
             Elvenar.Mouse.move(*p, wait=wait)
         Elvenar.Mouse.release(*pos[-1])
         Elvenar.NIter += 1
-        Elvenar.CollectedTools = NumStr(Elvenar.read_tool_count() - old_count)
+        sleep(2)
+        Elvenar.CollectedTools = NumStr(Elvenar.CollectedTools + Elvenar.read_tool_count() - old_count)
 
     @staticmethod
     def start_production(pos):
@@ -71,16 +82,20 @@ class Elvenar:
         Elvenar.NIter = 0
         Elvenar.CollectedTools = 0
         while True:
+            active_win = getoutput('xprop -root | grep _NET_ACTIVE_WINDOW | head -1 | cut -f5 -d " "')
+            Elvenar.go_to_game()
+            sleep(5)  # it may take some time until the game refreshes
             pos = self.find_workshops()
             if len(pos) > 0:
                 if collect_at_start or Elvenar.NIter > 0:
                     self.collect(*pos)
                     sleep(2)
                 self.start_production(pos[0])
-                self.Mouse.move(0, 600)  # move mouse away for pic identification
-            sleep(Elvenar.Times[Elvenar.SelectedInd] * 60 - 10)
+                # self.Mouse.move(0, 600)  # move mouse away for pic identification
+            call(f'wmctrl -ia {active_win}', shell=True)
+            sleep(Elvenar.Times[Elvenar.SelectedInd] * 60 - 14)
             say(Dir.joinpath('audio', '15sec.mp3'), '15 seconds left!')
-            sleep(15)
+            sleep(10)
 
     @staticmethod
     def locate_all_(pic, confidence=.99):
