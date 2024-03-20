@@ -41,7 +41,7 @@ class Elvenar:
     @staticmethod
     def activate():
         box = Elvenar.locate(Elvenar.FigDir.joinpath('path.png'))
-        Elvenar.Mouse.left_click(*(box.left, box.top) if box is not None else (0, 2222), wait=.2)
+        Elvenar.Mouse.left_click(*(box.left + box.width, box.top) if box is not None else (0, 2222), wait=.2)
 
     @staticmethod
     def go_to_city():
@@ -50,7 +50,6 @@ class Elvenar:
         box = Elvenar.locate(Elvenar.FigDir.joinpath('browser-icon.png'), region=(0, 0, 2000, 100), confidence=.8)
         Elvenar.Mouse.left_click(box.left + box.width, box.top + box.height // 2)
         Elvenar.Keys.tap('c', wait=.5)
-        Elvenar.activate()
 
     def zoom_in(self, n=5):
         self.go_to_city()  # only for testing
@@ -84,8 +83,10 @@ class Elvenar:
         Elvenar.CollectedTools = 0
         while True:
             active_win = getoutput('xprop -root | grep _NET_ACTIVE_WINDOW | head -1 | cut -f5 -d " "')
-            Elvenar.go_to_city()
-            sleep(10)  # it may take some time until the game refreshes
+            if Elvenar.NIter > 0:  # assume that the game is open upon first usage
+                Elvenar.go_to_city()
+                sleep(10)  # it may take some time until the game refreshes
+            Elvenar.activate()
             pos = self.find_workshops()
             if len(pos) > 0:
                 if collect_at_start or Elvenar.NIter > 0:
