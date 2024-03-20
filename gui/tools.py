@@ -137,4 +137,11 @@ class FarmingThread(QThread):
     CollectAtStart = True
 
     def run(self):
-        Elvenar.farm(collect_at_start=FarmingThread.CollectAtStart)
+        try:
+            Elvenar.farm(collect_at_start=FarmingThread.CollectAtStart)
+        except Exception as err:
+            import traceback
+            from datetime import datetime
+            print(err)
+            with open(Dir.joinpath('logs', f'crash-{datetime.now().strftime("%y-%m-%d_%H-%M-%S")}.log'), 'w') as log:
+                log.write(traceback.format_exc())
