@@ -6,7 +6,7 @@ from PIL import Image
 
 from user_input.keys import Keys
 from user_input.mouse import Mouse
-from utils.helpers import say, Dir
+from utils.helpers import say, Dir, ON
 from utils.classes import NumStr
 
 from subprocess import call, getoutput
@@ -24,6 +24,7 @@ class Elvenar:
     Mouse = Mouse()
     Keys = Keys()
     SelectedInd = 0
+    Sound = ON
 
     def __init__(self):
         pass
@@ -37,6 +38,10 @@ class Elvenar:
     @staticmethod
     def select_time(t: int):
         Elvenar.SelectedInd = t
+
+    @staticmethod
+    def change_sound():
+        Elvenar.Sound = not Elvenar.Sound
 
     @staticmethod
     def activate():
@@ -96,7 +101,8 @@ class Elvenar:
                 # self.Mouse.move(0, 600)  # move mouse away for pic identification
             call(f'wmctrl -ia {active_win}', shell=True)
             sleep(Elvenar.Times[Elvenar.SelectedInd] * 60 - 14)
-            say(Dir.joinpath('audio', '15sec.mp3'), '15 seconds left!')
+            if Elvenar.Sound:
+                say(Dir.joinpath('audio', '15sec.mp3'), '15 seconds left!')
             sleep(5)
 
     @staticmethod

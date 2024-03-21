@@ -95,8 +95,9 @@ class ToolBox(GroupBox):
 
     def create_tool_box(self):
         layout = QGridLayout()
-        # layout.addWidget(label('', self.test), 0, 0)  # spacing
-        layout.addWidget(button('test', self.test), 0, 0)
+        # layout.addWidget(button('test', self.test), 0, 0)
+        sound_button = SoundButton(Elvenar.change_sound, Elvenar.FigDir.joinpath('sound.svg'), Elvenar.FigDir.joinpath('sound-off.svg'), size=(20, 20))
+        layout.addWidget(sound_button, 0, 0, 1, 2, CEN)
         layout.addWidget(button('help', Elvenar.motivate), 1, 1)
         layout.addWidget(self.FarmButton, 1, 0)
         layout.addWidget(self.CollectFarmButton, 2, 0)

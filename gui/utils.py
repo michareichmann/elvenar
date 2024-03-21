@@ -21,6 +21,9 @@ LEFT = Qt.AlignLeft
 RIGHT = Qt.AlignRight
 CEN = Qt.AlignCenter
 
+ON = True
+OFF = False
+
 
 def set_button_height(v: int) -> None:
     global ButtonHeight
@@ -238,12 +241,16 @@ class OnOffButton(QAbstractButton):
     def __getitem__(self, item):
         return [self, self.Align, self.XPos][item]
 
+    @property
+    def pic(self):
+        return self.PicOn if self.Clicked else self.PicOff
+
     def flick(self, f):
         self.Clicked = not self.Clicked
         f()
 
     def paintEvent(self, event):
-        pix = deepcopy(self.PicOn if self.Clicked else self.PicOff)
+        pix = deepcopy(self.pic)
         if self.underMouse():
             pix.set_style_attr(3, 'fill', cnames['darkred' if self.Clicked else 'green'])
             pix.set_style_attr(4, 'fill', cnames['darkred' if self.Clicked else 'green'])
@@ -260,6 +267,25 @@ class OnOffButton(QAbstractButton):
 
     def sizeHint(self):
         return QSize(42, 16)
+
+
+class SoundButton(OnOffButton):
+
+    def __init__(self, f, pic_on: Path, pic_off: Path, status=ON, size=(30, 30), align: Qt.AlignmentFlag = CEN, xpos: int = 0, parent=None):
+        super().__init__(f, not status, pic_on, pic_off, align=align, xpos=xpos, parent=parent)
+        self.Size = size
+
+    def sizeHint(self):
+        return QSize(*self.Size)
+
+    def paintEvent(self, event):
+        pix = deepcopy(self.pic)
+        if self.underMouse():
+            pix = deepcopy(self.PicOff if self.Clicked else self.PicOn)
+            pix.set_opacity(.5)
+        painter = QPainter(self)
+        pix.render(painter)
+        painter.end()
 
 
 class PicButOpacity(PicButton):
