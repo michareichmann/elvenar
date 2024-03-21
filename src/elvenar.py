@@ -75,7 +75,7 @@ class Elvenar:
         Elvenar.Mouse.release(*pos[-1])
         Elvenar.NIter += 1
         sleep(2)
-        Elvenar.CollectedTools = NumStr(Elvenar.CollectedTools + Elvenar.read_tool_count() - old_count)
+        Elvenar.update_tool_count(old_count)
 
     @staticmethod
     def start_production(pos):
@@ -154,7 +154,7 @@ class Elvenar:
                     break
 
     @staticmethod
-    def read_tool_count(threshold=150):
+    def read_tool_count(threshold=170):
         try:
             from pytesseract import image_to_string
             from pyautogui import screenshot
@@ -164,8 +164,19 @@ class Elvenar:
             black, white = x >= threshold, x < threshold
             x[black] = 0
             x[white] = 255
+            Image.fromarray(x).save(Dir.joinpath('logs', 'test.png'))
             return NumStr(re.sub('[^KMG0-9.]+', '', image_to_string(Image.fromarray(x))))
         except Exception as err:
             print(err)
+
+    @staticmethod
+    def update_tool_count(old_cnt):
+        try:
+            new_count = Elvenar.read_tool_count()
+            if new_count > old_cnt:
+                Elvenar.CollectedTools = NumStr(Elvenar.CollectedTools + new_count - old_cnt)
+        except Exception as err:
+            print(err)
+
 
 
