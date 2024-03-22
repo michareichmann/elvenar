@@ -6,7 +6,7 @@ from PIL import Image
 
 from user_input.keys import Keys
 from user_input.mouse import Mouse
-from utils.helpers import say, Dir, ON
+from utils.helpers import play, Dir, ON, write_log, Path
 from utils.classes import NumStr
 
 from subprocess import call, getoutput
@@ -103,12 +103,11 @@ class Elvenar:
                     self.collect(*pos)
                     sleep(2)
                 self.start_production(pos[0])
-                # self.Mouse.move(0, 600)  # move mouse away for pic identification
             call(f'wmctrl -ia {active_win}', shell=True)
-            sleep(Elvenar.Times[Elvenar.SelectedInd] * 60 - 14)
+            sleep(Elvenar.Times[Elvenar.SelectedInd] * 60 - 16)
             if Elvenar.Sound:
-                say(Dir.joinpath('audio', '15sec.mp3'), '15 seconds left!')
-            sleep(5)
+                play(Dir.joinpath('audio', 'bells.mp3'), volume=10)
+            sleep(.1)
 
     @staticmethod
     def locate_all_(pic, confidence=.99):
