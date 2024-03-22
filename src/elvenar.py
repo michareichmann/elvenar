@@ -115,7 +115,7 @@ class Elvenar:
         try:
             return list(locateAllOnScreen(str(pic), confidence=confidence))
         except Exception as e:
-            print(e)
+            print(pic, e)
             return []
 
     @staticmethod
@@ -128,15 +128,25 @@ class Elvenar:
         try:
             return locateOnScreen(str(pic), confidence=confidence) if region is None else locate(str(pic), screenshot(region=region), confidence=confidence)
         except Exception as e:
-            print(e)
+            print(pic, e)
             return None
 
     @staticmethod
-    def find_workshops(confidence=.85):
+    def find_workshops(confidence=.8):
+        return Elvenar.find_buildings(Elvenar.FigDir.joinpath('ws'), confidence)
+
+    @staticmethod
+    def find_residences(confidence=.8):
+        return Elvenar.find_buildings(Elvenar.FigDir.joinpath('rb'), confidence)
+
+    @staticmethod
+    def find_buildings(p: Path, confidence=.8):
         try:
-            v = Elvenar.locate_all(*Elvenar.FigDir.joinpath('ws').glob('*.png'), confidence=confidence)
-            pos = [(int(b.left + b.width / 2), int(b.top + b.height)) for b in v]
-            return [p for i, p in enumerate(pos) if i == 0 or abs(p[0] - pos[i - 1][0] + p[1] - pos[i - 1][1]) > 5]  # remove duplicates
+            v = Elvenar.locate_all(*p.glob('*.png'), confidence=confidence)
+            pos = np.array([(int(b.left + b.width / 2), int(b.top + b.height)) for b in v])
+            pos = pos[np.argsort(np.linalg.norm(pos, axis=1))]  # sort by distance to offspring
+            d = np.concatenate([[99], np.linalg.norm(np.diff(pos, axis=0), axis=1)])  # distance between the neighbouring points
+            return pos[d > 5]
         except Exception as e:
             print(e)
             return []
@@ -144,7 +154,7 @@ class Elvenar:
     @staticmethod
     def find_tool_time():
         box = Elvenar.locate(Elvenar.FigDir.joinpath('tool-times', f'{Elvenar.SelectedInd}.png'), confidence=.8)
-        return (0, 0) if box is None else box.left + box.width, box.top + box.height
+        return (0, 0) if box is None else (box.left + box.width, box.top + box.height)
 
     @staticmethod
     def motivate():
