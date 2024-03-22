@@ -1,15 +1,15 @@
 import re
+from subprocess import call, getoutput
 from time import sleep, time
 
+import ffmpeg
 import numpy as np
 from PIL import Image
 
 from user_input.keys import Keys
 from user_input.mouse import Mouse
-from utils.helpers import play, Dir, ON, write_log, Path
 from utils.classes import NumStr
-
-from subprocess import call, getoutput
+from utils.helpers import play, Dir, ON, write_log, Path
 
 
 class Elvenar:
@@ -25,6 +25,7 @@ class Elvenar:
     Keys = Keys()
     SelectedInd = 0
     Sound = ON
+    Volume = 10
 
     def __init__(self):
         pass
@@ -104,15 +105,20 @@ class Elvenar:
                     sleep(2)
                 self.start_production(pos[0])
             call(f'wmctrl -ia {active_win}', shell=True)
-            sleep(Elvenar.Times[Elvenar.SelectedInd] * 60 - 16)
-            Elvenar.play_sound()
+            sleep(Elvenar.Times[Elvenar.SelectedInd] * 60 - 20)
+            Elvenar.play_sound(Dir.joinpath('audio', 'bells.mp3'))
 
     @staticmethod
-    def play_sound():
+    def play_sound(f: Path):
+        t = ffmpeg.probe(f)['format']['duration']
+        if t > 10:
+            raise ValueError('sound file too long!')
+        sleep(10 - t)
         if Elvenar.Sound:
-            play(Dir.joinpath('audio', 'bells.mp3'), volume=10)
+            play(f, Elvenar.Volume)
         else:
-            sleep(7)
+            sleep(t)
+
 
     @staticmethod
     def locate_all_(pic, confidence=.99):
