@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import QHBoxLayout, QGridLayout, QVBoxLayout, QProgressBar
 from gui.group_box import GroupBox
 from gui.utils import *
 from src.elvenar import Elvenar
-from utils.helpers import Dir
+from utils.helpers import Dir, write_log
 
 FigDir = Dir.joinpath('figures')
 Elvenar = Elvenar()
@@ -144,5 +144,4 @@ class FarmingThread(QThread):
             import traceback
             from datetime import datetime
             print(err)
-            with open(Dir.joinpath('logs', f'crash-{datetime.now().strftime("%y-%m-%d_%H-%M-%S")}.log'), 'w') as log:
-                log.write(traceback.format_exc())
+            write_log(traceback.format_exc())
