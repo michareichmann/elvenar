@@ -13,6 +13,8 @@ class Gui(QMainWindow):
 
     Width = 500
     Height = 200
+    X = 0
+    Y = 830
     BUTTON_HEIGHT = 50
     Version = 1.0
     Title = f'Elvenar Helper {Version}'
@@ -37,7 +39,7 @@ class Gui(QMainWindow):
         self.show()
 
     def configure(self):
-        self.setGeometry(1369, 794, Gui.Width, Gui.Height)
+        self.setGeometry(Gui.X, Gui.Y, Gui.Width, Gui.Height)
         self.setWindowTitle(Gui.Title)
         self.setWindowIcon(QIcon(str(Dir.joinpath('figures', 'icoc.png'))))
         self.setWindowFlags(Qt.WindowStaysOnTopHint)
