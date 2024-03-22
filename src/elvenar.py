@@ -54,10 +54,12 @@ class Elvenar:
     @staticmethod
     def go_to_city():
         call('wmctrl -a "Google Chrome"', shell=True)
-        sleep(.1)
+        sleep(.3)
         box = Elvenar.locate(Elvenar.FigDir.joinpath('browser-icon.png'), region=(0, 0, 2000, 100), confidence=.8)
-        Elvenar.Mouse.left_click(box.left + box.width, box.top + box.height // 2)
+        if box is not None:
+            Elvenar.Mouse.left_click(box.left + box.width, box.top + box.height // 2)
         Elvenar.Keys.tap('c', wait=.5)
+        Elvenar.Keys.press_esc(wait=.5)
 
     def zoom_in(self, n=5):
         self.go_to_city()  # only for testing
