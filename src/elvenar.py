@@ -168,7 +168,6 @@ class Elvenar:
             black, white = x >= threshold, x < threshold
             x[black] = 0
             x[white] = 255
-            Image.fromarray(x).save(Dir.joinpath('logs', 'test.png'))
             return NumStr(re.sub('[^KMG0-9.]+', '', image_to_string(Image.fromarray(x))))
         except Exception as err:
             print(err)
@@ -177,7 +176,9 @@ class Elvenar:
     def update_tool_count(old_cnt):
         try:
             new_count = Elvenar.read_tool_count()
-            if new_count > old_cnt:
+            if Elvenar.NIter and old_cnt - new_count > 3 * Elvenar.CollectedTools / Elvenar.NIter:
+                write_log(f'Strange tool count: old: {old_cnt}, new {new_count}, avr: {Elvenar.CollectedTools / Elvenar.NIter:.1f}')
+            elif new_count > old_cnt:
                 Elvenar.CollectedTools = NumStr(Elvenar.CollectedTools + new_count - old_cnt)
         except Exception as err:
             print(err)
