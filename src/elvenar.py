@@ -105,9 +105,14 @@ class Elvenar:
                 self.start_production(pos[0])
             call(f'wmctrl -ia {active_win}', shell=True)
             sleep(Elvenar.Times[Elvenar.SelectedInd] * 60 - 16)
-            if Elvenar.Sound:
-                play(Dir.joinpath('audio', 'bells.mp3'), volume=10)
-            sleep(.1)
+            Elvenar.play_sound()
+
+    @staticmethod
+    def play_sound():
+        if Elvenar.Sound:
+            play(Dir.joinpath('audio', 'bells.mp3'), volume=10)
+        else:
+            sleep(7)
 
     @staticmethod
     def locate_all_(pic, confidence=.99):
