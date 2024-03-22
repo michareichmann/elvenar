@@ -45,8 +45,11 @@ class Elvenar:
 
     @staticmethod
     def activate():
-        box = Elvenar.locate(Elvenar.FigDir.joinpath('path.png'))
-        Elvenar.Mouse.left_click(*(box.left + box.width, box.top) if box is not None else (0, 2222), wait=.2)
+        box = Elvenar.locate(Elvenar.FigDir.joinpath('letter.png'))
+        if box is not None:
+            Elvenar.Mouse.left_click(*(box.left - 10, box.top))
+        else:
+            raise ValueError('Error activating game')
 
     @staticmethod
     def go_to_city():
