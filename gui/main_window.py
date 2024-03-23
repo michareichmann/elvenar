@@ -5,6 +5,7 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QFontDialog, QAction, QApplication
 
 from gui.tools import ToolBox, Elvenar
+from gui.motivate import HelpBox
 from gui.utils import *
 from utils.helpers import Dir
 
@@ -29,8 +30,7 @@ class Gui(QMainWindow):
 
         self.ToolBox = ToolBox()
         self.Layout.addWidget(self.ToolBox)
-        # self.MineBoxes = self.create_boxes()
-        # self.MineDialogue = MineDialogue(self.MineBoxes)
+        self.Layout.addWidget(HelpBox())
         self.MenuBar = MenuBar(self)
 
         self.adjustSize()
