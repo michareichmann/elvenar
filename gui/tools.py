@@ -98,14 +98,15 @@ class ToolBox(GroupBox):
         # layout.addWidget(button('test', self.test), 0, 0)
         sound_button = SoundButton(Elvenar.change_sound, Elvenar.FigDir.joinpath('sound.svg'), Elvenar.FigDir.joinpath('sound-off.svg'), size=(20, 20))
         layout.addWidget(sound_button, 0, 0, 1, 2, CEN)
-        layout.addWidget(button('help', Elvenar.motivate), 1, 1)
         layout.addWidget(self.FarmButton, 1, 0)
         layout.addWidget(self.CollectFarmButton, 2, 0)
-        layout.addWidget(button('stop farming', self.FarmingThread.terminate), 2, 1)
-        layout.addWidget(label('Iterations:'), 3, 0, RIGHT)
-        layout.addWidget(self.InfoLabel, 3, 1, LEFT)
-        layout.addWidget(label('Collected:'), 4, 0, RIGHT)
-        layout.addWidget(self.ToolLabel, 4, 1, LEFT)
+        layout.addWidget(button('stop', self.FarmingThread.terminate), 2, 1)
+        layout.addWidget(button('help', partial(Elvenar.motivate, all_=False)), 3, 0)
+        layout.addWidget(button('help all', partial(Elvenar.motivate, all_=True)), 3, 1)
+        layout.addWidget(label('Iterations:'), 4, 0, RIGHT)
+        layout.addWidget(self.InfoLabel, 4, 1, LEFT)
+        layout.addWidget(label('Collected:'), 5, 0, RIGHT)
+        layout.addWidget(self.ToolLabel, 5, 1, LEFT)
         return layout
 
     def create_t_selector(self):

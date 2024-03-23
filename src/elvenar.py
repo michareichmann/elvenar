@@ -178,28 +178,30 @@ class Elvenar:
         return (0, 0) if box is None else (box.left + box.width, box.top + box.height)
 
     @staticmethod
-    def motivate():
-        v = locate_all(*(Elvenar.FigDir.joinpath(f'hands{i}.png') for i in ['', '-gold']), confidence=.99)
-        for pos in [(int(b.left + b.width / 2), int(b.top + b.height / 2)) for b in v]:
-            Elvenar.Mouse.left_click(*pos, wait=.5)
-            for pic in [Elvenar.FigDir.joinpath(f'{i}.png') for i in ['culture', 'money', 'construct']]:
-                box = locate(pic, confidence=.9)
-                if box is not None:
-                    Elvenar.Mouse.left_click(box.left, box.top, wait=.3)
-                    break
+    def motivate(all_=True):
+        v = [1]
+        while len(v):
+            v = locate_all(*(Elvenar.FigDir.joinpath(f'hands{i}.png') for i in ['', '-gold']), confidence=.99)
+            for pos in [(int(b.left + b.width / 2), int(b.top + b.height / 2)) for b in v]:
+                Elvenar.Mouse.left_click(*pos, wait=.5)
+                for pic in [Elvenar.FigDir.joinpath(f'{i}.png') for i in ['culture', 'money', 'construct']]:
+                    box = locate(pic, confidence=.9)
+                    if box is not None:
+                        Elvenar.Mouse.left_click(box.left, box.top, wait=.3)
+                        break
+            if not all_:
+                v = []
+            else:
+                sleep(.5)
+                Elvenar.Keys.press_right(wait=2)
 
     @staticmethod
     def read_tool_count(threshold=170):
         try:
-            from pytesseract import image_to_string
             from pyautogui import screenshot
             box = locate(Elvenar.FigDir.joinpath('black-tools.png'))
             r = np.array([box.left + box.width, box.top, int(2.5 * box.width), box.height]).tolist()
-            x = np.array(screenshot(region=r).convert('L'))  # grayscale img as array
-            black, white = x >= threshold, x < threshold
-            x[black] = 0
-            x[white] = 255
-            return NumStr(re.sub('[^KMG0-9.]+', '', image_to_string(Image.fromarray(x))))
+            return NumStr(re.sub('[^KMG0-9.]+', '', img2str(screenshot(region=r), threshold, inverted=True)))
         except Exception as err:
             print(err)
 
