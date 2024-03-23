@@ -118,7 +118,7 @@ class Elvenar:
 
     @staticmethod
     def start_production(pos):
-        Elvenar.Mouse.left_click(*pos, wait=.5)
+        Elvenar.Mouse.left_click(*pos, wait=1)
         Elvenar.Mouse.left_click(*Elvenar.find_tool_time())
         Elvenar.T0 = time()
 
@@ -138,7 +138,7 @@ class Elvenar:
                     sleep(2)
                 self.start_production(pos[0])
             call(f'wmctrl -ia {active_win}', shell=True)
-            sleep(Elvenar.Times[Elvenar.SelectedInd] * 60 - 20)
+            sleep(Elvenar.Times[Elvenar.SelectedInd] * 60 - 21)
             Elvenar.play_sound(Dir.joinpath('audio', 'bells.mp3'))
 
     @staticmethod
