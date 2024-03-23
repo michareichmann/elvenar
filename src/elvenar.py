@@ -46,7 +46,7 @@ class Elvenar:
 
     @staticmethod
     def activate():
-        box = Elvenar.locate(Elvenar.FigDir.joinpath('letter.png'))
+        box = Elvenar.locate(Elvenar.FigDir.joinpath('guild.png'))
         if box is not None:
             Elvenar.Mouse.left_click(*(box.left - 10, box.top))
         else:
@@ -56,7 +56,7 @@ class Elvenar:
     def go_to_city():
         call('wmctrl -a "Google Chrome"', shell=True)
         sleep(.3)
-        box = Elvenar.locate(Elvenar.FigDir.joinpath('browser-icon.png'), region=(0, 0, 2000, 100), confidence=.8)
+        box = Elvenar.locate(Elvenar.FigDir.joinpath('browser-icon.png'), region=(0, 0, 2000, 100), confidence=.7)
         if box is not None:
             Elvenar.Mouse.left_click(box.left + box.width, box.top + box.height // 2)
         Elvenar.Keys.tap('c', wait=.5)
@@ -110,7 +110,7 @@ class Elvenar:
 
     @staticmethod
     def play_sound(f: Path):
-        t = ffmpeg.probe(f)['format']['duration']
+        t = float(ffmpeg.probe(f)['format']['duration'])
         if t > 10:
             raise ValueError('sound file too long!')
         sleep(10 - t)
@@ -118,7 +118,6 @@ class Elvenar:
             play(f, Elvenar.Volume)
         else:
             sleep(t)
-
 
     @staticmethod
     def locate_all_(pic, confidence=.99):
