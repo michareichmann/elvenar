@@ -10,6 +10,7 @@ from user_input.keys import Keys
 from user_input.mouse import Mouse
 from utils.classes import NumStr
 from utils.helpers import play, Dir, ON, write_log, Path
+from pytesseract import image_to_string
 
 
 def locate_all_(pic, confidence=.99):
@@ -32,6 +33,16 @@ def locate(pic, confidence=.99, region=None):
     except Exception as e:
         print(pic, e)
         return None
+
+
+def img2str(img: Image, threshold, inverted=False, save=False):
+    x = np.array(img.convert('L'))  # grayscale img as array
+    black, white = (x >= threshold, x < threshold) if inverted else (x <= threshold, x > threshold)
+    x[black] = 0
+    x[white] = 255
+    if save:
+        Image.fromarray(x).save(Dir.joinpath('logs', 'test.png'))
+    return image_to_string(Image.fromarray(x))
 
 
 class Elvenar:
