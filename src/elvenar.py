@@ -12,6 +12,28 @@ from utils.classes import NumStr
 from utils.helpers import play, Dir, ON, write_log, Path
 
 
+def locate_all_(pic, confidence=.99):
+    from pyautogui import locateAllOnScreen
+    try:
+        return list(locateAllOnScreen(str(pic), confidence=confidence))
+    except Exception as e:
+        print(pic, e)
+        return []
+
+
+def locate_all(*pics, confidence=.99):
+    return sum((locate_all_(p, confidence) for p in pics), start=[])
+
+
+def locate(pic, confidence=.99, region=None):
+    from pyautogui import locateOnScreen, locate, screenshot
+    try:
+        return locateOnScreen(str(pic), confidence=confidence) if region is None else locate(str(pic), screenshot(region=region), confidence=confidence)
+    except Exception as e:
+        print(pic, e)
+        return None
+
+
 class Elvenar:
 
     FigDir = Dir.joinpath('figures')
@@ -46,7 +68,7 @@ class Elvenar:
 
     @staticmethod
     def activate():
-        box = Elvenar.locate(Elvenar.FigDir.joinpath('guild.png'))
+        box = locate(Elvenar.FigDir.joinpath('guild.png'))
         if box is not None:
             Elvenar.Mouse.left_click(*(box.left - 10, box.top))
         else:
@@ -56,7 +78,7 @@ class Elvenar:
     def go_to_city():
         call('wmctrl -a "Google Chrome"', shell=True)
         sleep(.3)
-        box = Elvenar.locate(Elvenar.FigDir.joinpath('browser-icon.png'), region=(0, 0, 2000, 100), confidence=.7)
+        box = locate(Elvenar.FigDir.joinpath('browser-icon.png'), region=(0, 0, 2000, 100), confidence=.7)
         if box is not None:
             Elvenar.Mouse.left_click(box.left + box.width, box.top + box.height // 2)
         Elvenar.Keys.tap('c', wait=.5)
@@ -120,28 +142,6 @@ class Elvenar:
             sleep(t)
 
     @staticmethod
-    def locate_all_(pic, confidence=.99):
-        from pyautogui import locateAllOnScreen
-        try:
-            return list(locateAllOnScreen(str(pic), confidence=confidence))
-        except Exception as e:
-            print(pic, e)
-            return []
-
-    @staticmethod
-    def locate_all(*pics, confidence=.99):
-        return sum((Elvenar.locate_all_(p, confidence) for p in pics), start=[])
-
-    @staticmethod
-    def locate(pic, confidence=.99, region=None):
-        from pyautogui import locateOnScreen, locate, screenshot
-        try:
-            return locateOnScreen(str(pic), confidence=confidence) if region is None else locate(str(pic), screenshot(region=region), confidence=confidence)
-        except Exception as e:
-            print(pic, e)
-            return None
-
-    @staticmethod
     def find_workshops(confidence=.8):
         return Elvenar.find_buildings(Elvenar.FigDir.joinpath('ws'), confidence)
 
@@ -152,7 +152,7 @@ class Elvenar:
     @staticmethod
     def find_buildings(p: Path, confidence=.8):
         try:
-            v = Elvenar.locate_all(*p.glob('*.png'), confidence=confidence)
+            v = locate_all(*p.glob('*.png'), confidence=confidence)
             pos = np.array([(int(b.left + b.width / 2), int(b.top + b.height)) for b in v])
             pos = pos[np.argsort(np.linalg.norm(pos, axis=1))]  # sort by distance to offspring
             d = np.concatenate([[99], np.linalg.norm(np.diff(pos, axis=0), axis=1)])  # distance between the neighbouring points
@@ -163,16 +163,16 @@ class Elvenar:
 
     @staticmethod
     def find_tool_time():
-        box = Elvenar.locate(Elvenar.FigDir.joinpath('tool-times', f'{Elvenar.SelectedInd}.png'), confidence=.8)
+        box = locate(Elvenar.FigDir.joinpath('tool-times', f'{Elvenar.SelectedInd}.png'), confidence=.8)
         return (0, 0) if box is None else (box.left + box.width, box.top + box.height)
 
     @staticmethod
     def motivate():
-        v = Elvenar.locate_all(*(Elvenar.FigDir.joinpath(f'hands{i}.png') for i in ['', '-gold']), confidence=.99)
+        v = locate_all(*(Elvenar.FigDir.joinpath(f'hands{i}.png') for i in ['', '-gold']), confidence=.99)
         for pos in [(int(b.left + b.width / 2), int(b.top + b.height / 2)) for b in v]:
             Elvenar.Mouse.left_click(*pos, wait=.5)
             for pic in [Elvenar.FigDir.joinpath(f'{i}.png') for i in ['culture', 'money', 'construct']]:
-                box = Elvenar.locate(pic, confidence=.9)
+                box = locate(pic, confidence=.9)
                 if box is not None:
                     Elvenar.Mouse.left_click(box.left, box.top, wait=.3)
                     break
@@ -182,7 +182,7 @@ class Elvenar:
         try:
             from pytesseract import image_to_string
             from pyautogui import screenshot
-            box = Elvenar.locate(Elvenar.FigDir.joinpath('black-tools.png'))
+            box = locate(Elvenar.FigDir.joinpath('black-tools.png'))
             r = np.array([box.left + box.width, box.top, int(2.5 * box.width), box.height]).tolist()
             x = np.array(screenshot(region=r).convert('L'))  # grayscale img as array
             black, white = x >= threshold, x < threshold
@@ -202,6 +202,3 @@ class Elvenar:
                 Elvenar.CollectedTools = NumStr(Elvenar.CollectedTools + new_count - old_cnt)
         except Exception as err:
             print(err)
-
-
-
