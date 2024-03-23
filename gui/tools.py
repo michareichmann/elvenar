@@ -4,7 +4,7 @@ from time import time
 import numpy as np
 
 from PyQt5.QtCore import QThread
-from PyQt5.QtWidgets import QHBoxLayout, QGridLayout, QVBoxLayout, QProgressBar
+from PyQt5.QtWidgets import QGridLayout, QVBoxLayout, QProgressBar
 
 from gui.group_box import GroupBox
 from gui.utils import *
@@ -13,7 +13,6 @@ from utils.helpers import Dir, write_log
 
 FigDir = Dir.joinpath('figures')
 Elvenar = Elvenar()
-set_button_height(25)
 
 
 class ToolBox(GroupBox):
@@ -25,8 +24,8 @@ class ToolBox(GroupBox):
     def __init__(self):
         super().__init__()
 
-        self.FarmButton = button('farm', self.farm)
-        self.CollectFarmButton = button('collect + farm', partial(self.farm, True))
+        self.FarmButton = button('start', self.farm)
+        self.CollectFarmButton = button('coll && start', partial(self.farm, True))
         self.TCheckBoxes = self.create_t_check_boxes()
         self.InfoLabel = label('x')
         self.ToolLabel = label('0')
@@ -34,7 +33,7 @@ class ToolBox(GroupBox):
         self.FarmingThread = FarmingThread(self)
 
         self.Layout = self.create_layout()
-        self.create_upper_box()
+        self.create_tool_box()
         self.PBar: QProgressBar = self.create_progress_bar()
 
     def update(self):
@@ -60,23 +59,13 @@ class ToolBox(GroupBox):
     # region LAYOUT & WIDGETS
     def create_layout(self) -> QVBoxLayout:
         self.setLayout(QVBoxLayout(self))
-        self.layout().setContentsMargins(4, 4, 4, 4)
+        self.set_margins()
         return self.layout()  # noqa
-
-    def create_upper_box(self):
-        layout = QHBoxLayout()
-        layout.addLayout(self.create_tool_box())
-        layout.addLayout(self.create_t_selector())
-        self.Layout.addLayout(layout)
 
     def create_progress_bar(self):
         pbar = QProgressBar(self)
         self.Layout.addWidget(pbar)
         return pbar
-
-    def create_widgets(self):
-        self.create_tool_box()
-        self.create_t_selector()
 
     def farm(self, collect_at_start=False):
 
@@ -100,14 +89,13 @@ class ToolBox(GroupBox):
         layout.addWidget(sound_button, 0, 0, 1, 2, CEN)
         layout.addWidget(self.FarmButton, 1, 0)
         layout.addWidget(self.CollectFarmButton, 2, 0)
+        layout.addWidget(button('pause', partial(self.FarmingThread.sleep, 500)), 1, 1)
         layout.addWidget(button('stop', self.FarmingThread.terminate), 2, 1)
-        layout.addWidget(button('help', partial(Elvenar.motivate, all_=False)), 3, 0)
-        layout.addWidget(button('help all', partial(Elvenar.motivate, all_=True)), 3, 1)
         layout.addWidget(label('Iterations:'), 4, 0, RIGHT)
         layout.addWidget(self.InfoLabel, 4, 1, LEFT)
         layout.addWidget(label('Collected:'), 5, 0, RIGHT)
         layout.addWidget(self.ToolLabel, 5, 1, LEFT)
-        return layout
+        self.Layout.addLayout(layout)
 
     def create_t_selector(self):
         layout = QGridLayout()
@@ -119,8 +107,6 @@ class ToolBox(GroupBox):
             layout.addWidget(self.TCheckBoxes[i], i % 3 + 1, 2 if i < 3 else 3)
         return layout
 
-    # endregion
-    # ----------------------------------
     def create_t_check_boxes(self):
         self.TCheckBoxes = [check_box() for _ in range(6)]
         self.TCheckBoxes[0].setChecked(True)
@@ -132,6 +118,8 @@ class ToolBox(GroupBox):
             box.toggled.connect(partial(uncheck_others, box))
             box.toggled.connect(lambda: Elvenar.select_time(self.tool_select))
         return self.TCheckBoxes
+    # endregion
+    # ----------------------------------
 
 
 class FarmingThread(QThread):
@@ -143,6 +131,5 @@ class FarmingThread(QThread):
             Elvenar.farm(collect_at_start=FarmingThread.CollectAtStart)
         except Exception as err:
             import traceback
-            from datetime import datetime
             print(err)
             write_log(traceback.format_exc())
