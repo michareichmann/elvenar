@@ -14,7 +14,8 @@ from copy import deepcopy
 
 
 FontSize = 13
-ButtonHeight = 50
+ButtonHeight = 25
+ButtonWidth = 75
 
 
 LEFT = Qt.AlignLeft
@@ -28,6 +29,11 @@ OFF = False
 def set_button_height(v: int) -> None:
     global ButtonHeight
     ButtonHeight = v
+
+
+def set_button_width(v: int) -> None:
+    global ButtonWidth
+    ButtonWidth = v
 
 
 def my_widget(cls, align: Qt.AlignmentFlag, xpos: int = 0, parent=None):
@@ -81,7 +87,7 @@ def text_edit(txt='', length=None, min_height=None, align=CEN, xpos=0):
 def button(txt, f=do_nothing, size=None, height=None, align=CEN, xpos=0):
     but = my_widget(QPushButton, align, xpos)
     but.setText(txt)
-    do(but.setFixedWidth, size)
+    do(but.setFixedWidth, choose(size, ButtonWidth))
     do(but.setFixedHeight, choose(height, ButtonHeight))
     but.clicked.connect(f)  # noqa
     return but

@@ -11,7 +11,6 @@ class HelpBox(GroupBox):
 
     Title = 'Motivation'
     Height = 22
-    ButtonWidth = 100
 
     def __init__(self):
         super().__init__()
@@ -24,5 +23,5 @@ class HelpBox(GroupBox):
         return self.layout()  # noqa
 
     def create_widgets(self):
-        self.Layout.addWidget(button('help', partial(Elvenar.motivate, all_=False), size=self.ButtonWidth), 0, 0)
-        self.Layout.addWidget(button('help all', partial(Elvenar.motivate, all_=True), size=self.ButtonWidth), 0, 1)
+        self.Layout.addWidget(button('help', partial(Elvenar.motivate, all_=False)), 0, 0)
+        self.Layout.addWidget(button('help all', partial(Elvenar.motivate, all_=True)), 0, 1)
