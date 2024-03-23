@@ -7,6 +7,7 @@ class GroupBox(QGroupBox):
 
     Height = 35
     Title = 'Group Box'
+    Margins = (4, 4, 4, 4)
 
     def __init__(self):
         super(GroupBox, self).__init__()
@@ -23,6 +24,9 @@ class GroupBox(QGroupBox):
         self.setTitle(self.Title)
         self.setFont(QFont('Ubuntu', 8, QFont.Bold))
         format_widget(self, color='red')
+
+    def set_margins(self):
+        self.layout().setContentsMargins(*self.Margins)
 
     def set_fonts(self, font):
         for widget in self.Widgets:
