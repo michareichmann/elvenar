@@ -26,19 +26,20 @@ ON = True
 OFF = False
 
 
-def set_button_height(v: int) -> None:
-    global ButtonHeight
-    ButtonHeight = v
+class MyWidget(object):
 
+    def __init__(self, align: Qt.AlignmentFlag, xpos: int = 0, **kw):
+        super().__init__()
+        self.Align = align
+        self.XPos = xpos
 
-def set_button_width(v: int) -> None:
-    global ButtonWidth
-    ButtonWidth = v
+    def __getitem__(self, item):
+        return [self, self.Align, self.XPos][item]
 
 
 def my_widget(cls, align: Qt.AlignmentFlag, xpos: int = 0, parent=None):
 
-    class MyWidget(cls):
+    class MyWidgeta(cls):
 
         def __init__(self):
             super().__init__(parent)
@@ -51,7 +52,7 @@ def my_widget(cls, align: Qt.AlignmentFlag, xpos: int = 0, parent=None):
         def __getitem__(self, item):
             return [self, self.Align, self.XPos][item]
 
-    return MyWidget()
+    return MyWidgeta()
 
 
 def combobox(lst, ind=0, align=CEN, xpos=0):
@@ -317,6 +318,22 @@ class PicButOpacity(PicButton):
         return QSize(40, 40)
 
 
-if __name__ == '__main__':
+class PauseButton(MyWidget, QPushButton):
 
-    a = MyXML(Path('figures/on.svg'))
+    Text = ['continue', 'pause']
+
+    def __init__(self, f: callable, size=None, height=None, align: Qt.AlignmentFlag = CEN, xpos: int = 0, parent=None):
+        super(PauseButton, self).__init__(align=align, xpos=xpos, parent=parent)
+        self.State = OFF
+        self.configure(f, size, height)
+
+    def configure(self, f, size, height):
+        do(self.setFixedWidth, choose(size, ButtonWidth))
+        do(self.setFixedHeight, choose(height, ButtonHeight))
+        self.setText(PauseButton.Text[1])
+        self.clicked.connect(f)  # noqa
+        self.clicked.connect(self.flick)  # noqa
+
+    def flick(self):
+        self.setText(PauseButton.Text[self.State])
+        self.State = not self.State
