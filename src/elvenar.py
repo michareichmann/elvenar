@@ -59,6 +59,7 @@ class Elvenar:
     SelectedInd = 0
     Sound = ON
     Volume = 10
+    Paused = False
 
     def __init__(self):
         pass
@@ -127,6 +128,8 @@ class Elvenar:
         Elvenar.NIter = 0
         Elvenar.CollectedTools = 0
         while True:
+            while Elvenar.Paused:
+                sleep(1)
             active_win = getoutput('xprop -root | grep _NET_ACTIVE_WINDOW | head -1 | cut -f5 -d " "')
             if Elvenar.NIter > 0:  # assume that the game is open upon first usage
                 Elvenar.go_to_city()
