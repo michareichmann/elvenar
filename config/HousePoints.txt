@@ -1,3 +1,0 @@
- 3  11  5  Einfamilienhaus
-15  10     Residenz
-#0  14  6  Hochhaus
