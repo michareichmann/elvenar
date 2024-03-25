@@ -119,7 +119,8 @@ class Elvenar:
     @staticmethod
     def start_production(pos):
         Elvenar.Mouse.left_click(*pos, wait=1)
-        Elvenar.Mouse.left_click(*Elvenar.find_tool_time())
+        t_pos = Elvenar.find_tool_time()
+        Elvenar.Keys.press_esc() if t_pos is None else Elvenar.Mouse.left_click(*t_pos)
         Elvenar.T0 = time()
 
     def farm(self, collect_at_start=False):
@@ -175,7 +176,8 @@ class Elvenar:
     @staticmethod
     def find_tool_time():
         box = locate(Elvenar.FigDir.joinpath('tool-times', f'{Elvenar.SelectedInd}.png'), confidence=.8)
-        return (0, 0) if box is None else (box.left + box.width, box.top + box.height)
+        if box is not None:
+            return box.left + box.width, box.top + box.height
 
     @staticmethod
     def motivate(all_=True):
