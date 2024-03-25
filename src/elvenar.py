@@ -124,16 +124,21 @@ class Elvenar:
         Elvenar.Keys.press_esc() if t_pos is None else Elvenar.Mouse.left_click(*t_pos)
         Elvenar.T0 = time()
 
+    @staticmethod
+    def pause():
+        Elvenar.Paused = not Elvenar.Paused
+
     def farm(self, collect_at_start=False):
         Elvenar.NIter = 0
         Elvenar.CollectedTools = 0
         while True:
-            while Elvenar.Paused:
-                sleep(1)
             active_win = getoutput('xprop -root | grep _NET_ACTIVE_WINDOW | head -1 | cut -f5 -d " "')
             if Elvenar.NIter > 0:  # assume that the game is open upon first usage
+                sleep(2)
+                while Elvenar.Paused:
+                    sleep(1)
                 Elvenar.go_to_city()
-                sleep(10)  # it may take some time until the game refreshes
+                sleep(8)  # it may take some time until the game refreshes
             Elvenar.activate()
             pos = self.find_workshops()
             if len(pos) > 0:
