@@ -89,7 +89,7 @@ class ToolBox(GroupBox):
         layout.addWidget(sound_button, 0, 0, 1, 2, CEN)
         layout.addWidget(self.FarmButton, 1, 0)
         layout.addWidget(self.CollectFarmButton, 2, 0)
-        layout.addWidget(button('pause', partial(self.FarmingThread.sleep, 500)), 1, 1)
+        layout.addWidget(PauseButton(self.FarmingThread.pause), 1, 1)
         layout.addWidget(button('stop', self.FarmingThread.terminate), 2, 1)
         layout.addWidget(label('Iterations:'), 4, 0, RIGHT)
         layout.addWidget(self.InfoLabel, 4, 1, LEFT)
@@ -133,3 +133,7 @@ class FarmingThread(QThread):
             import traceback
             print(err)
             write_log(traceback.format_exc())
+
+    @staticmethod
+    def pause():
+        Elvenar.Paused = not Elvenar.Paused
