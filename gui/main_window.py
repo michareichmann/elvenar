@@ -30,7 +30,8 @@ class Gui(QMainWindow):
 
         self.ToolBox = ToolBox()
         self.Layout.addWidget(self.ToolBox)
-        self.Layout.addWidget(HelpBox())
+        self.HelpBox = HelpBox()
+        self.Layout.addWidget(self.HelpBox)
         self.MenuBar = MenuBar(self)
 
         self.adjustSize()
@@ -69,6 +70,7 @@ class Gui(QMainWindow):
 
     def update(self):
         self.ToolBox.update()
+        self.HelpBox.update()
 
 
 class MenuBar(object):

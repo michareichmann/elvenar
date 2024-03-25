@@ -5,14 +5,16 @@ from time import sleep, time
 import ffmpeg
 import numpy as np
 from PIL import Image
+from pytesseract import image_to_string
 
 from user_input.keys import Keys
 from user_input.mouse import Mouse
 from utils.classes import NumStr
-from utils.helpers import play, Dir, ON, write_log, Path
-from pytesseract import image_to_string
+from utils.helpers import play, Dir, ON, write_log, Path, do_pickle
 
 
+# ------------------------------
+# region helper functions
 def locate_all_(pic, confidence=.99):
     from pyautogui import locateAllOnScreen
     try:
@@ -43,6 +45,8 @@ def img2str(img: Image, threshold, inverted=False, save=False):
     if save:
         Image.fromarray(x).save(Dir.joinpath('logs', 'test.png'))
     return image_to_string(Image.fromarray(x))
+# endregion
+# ------------------------------
 
 
 class Elvenar:
@@ -60,6 +64,9 @@ class Elvenar:
     Sound = ON
     Volume = 10
     Paused = False
+
+    LMPath = Dir.joinpath('config', 'last-motivate.pickle')
+    LastMotivate = do_pickle(LMPath, time)
 
     def __init__(self):
         pass
@@ -204,6 +211,12 @@ class Elvenar:
             else:
                 sleep(.5)
                 Elvenar.Keys.press_right(wait=2)
+        if all_:
+            Elvenar.save_last_motivate()
+
+    @staticmethod
+    def save_last_motivate():
+        Elvenar.LastMotivate = do_pickle(Elvenar.LMPath, lambda: time() - 60 * 60, redo=True)
 
     @staticmethod
     def read_tool_count(threshold=170):
