@@ -1,17 +1,16 @@
 import re
 from subprocess import call, getoutput
-from time import sleep, time
+from time import sleep
 
 import ffmpeg
-import numpy as np
 from PIL import Image
 from pytesseract import image_to_string
 
+from src.utils import *
 from user_input.keys import Keys
 from user_input.mouse import Mouse
 from utils.classes import NumStr
 from utils.helpers import play, Dir, ON, write_log, Path, do_pickle
-from src.utils import *
 
 
 # ------------------------------
