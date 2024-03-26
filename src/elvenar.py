@@ -11,6 +11,7 @@ from user_input.keys import Keys
 from user_input.mouse import Mouse
 from utils.classes import NumStr
 from utils.helpers import play, Dir, ON, write_log, Path, do_pickle
+from src.utils import *
 
 
 # ------------------------------
@@ -37,14 +38,16 @@ def locate(pic, confidence=.99, region=None):
         return None
 
 
-def img2str(img: Image, threshold, inverted=False, save=False):
-    x = np.array(img.convert('L'))  # grayscale img as array
-    black, white = (x >= threshold, x < threshold) if inverted else (x <= threshold, x > threshold)
-    x[black] = 0
-    x[white] = 255
+def img2str(img: Image, threshold=180, inverted=False, save=False, convert=False, sub='[^a-zA-Z0-9.:]+'):
+    if convert or inverted:
+        x = np.array(img.convert('L'))  # grayscale img as array
+        black, white = (x >= threshold, x < threshold) if inverted else (x <= threshold, x > threshold)
+        x[black] = 0
+        x[white] = 255
+        img = Image.fromarray(x)
     if save:
-        Image.fromarray(x).save(Dir.joinpath('logs', 'test.png'))
-    return image_to_string(Image.fromarray(x))
+        img.save(Dir.joinpath('logs', 'test.png'))
+    return re.sub(sub, '', image_to_string(img))
 # endregion
 # ------------------------------
 
@@ -223,7 +226,7 @@ class Elvenar:
             from pyautogui import screenshot
             box = locate(Elvenar.FigDir.joinpath('black-tools.png'))
             r = np.array([box.left + box.width, box.top, int(2.5 * box.width), box.height]).tolist()
-            return NumStr(re.sub('[^KMG0-9.]+', '', img2str(screenshot(region=r), threshold, inverted=True)))
+            return NumStr(img2str(screenshot(region=r), threshold, inverted=True, sub='[^KMG0-9.]+'))
         except Exception as err:
             print(err)
 
@@ -237,3 +240,17 @@ class Elvenar:
                 Elvenar.CollectedTools = NumStr(Elvenar.CollectedTools + new_count - old_cnt)
         except Exception as err:
             print(err)
+
+    @staticmethod
+    def read_construction_timers():
+        from pyautogui import screenshot
+        Elvenar.activate()
+        box = locate(Elvenar.FigDir.joinpath('builder.png'))
+        if box is not None:
+            Elvenar.Mouse.left_click(*box2pos(box), wait=1)
+            regions = [np.array([box.left - box.width * 2.5, box.top, box.width * 2.5, box.height]).astype('i') for box in locate_all(Elvenar.pic('build-t'))]
+            times = [img2str(screenshot(region=r.tolist())) for r in regions]
+            Elvenar.Keys.press_esc()
+            return filter(lambda x: 'Std' in x or 'Min' in x, times)
+        return []
+
