@@ -88,8 +88,8 @@ def text_edit(txt='', length=None, min_height=None, align=CEN, xpos=0):
 def button(txt, f=do_nothing, size=None, height=None, align=CEN, xpos=0):
     but = my_widget(QPushButton, align, xpos)
     but.setText(txt)
-    do(but.setFixedWidth, choose(size, ButtonWidth))
-    do(but.setFixedHeight, choose(height, ButtonHeight))
+    do(but.setFixedWidth, None if size == -1 else choose(size, ButtonWidth))
+    do(but.setFixedHeight, None if height == -1 else choose(height, ButtonHeight))
     but.clicked.connect(f)  # noqa
     return but
 
