@@ -16,7 +16,7 @@ class Gui(QMainWindow):
     Width = 500
     Height = 200
     X = 1597
-    Y = 737
+    Y = 769
     BUTTON_HEIGHT = 50
     Version = 1.0
     Title = f'Elvenar Helper {Version}'
