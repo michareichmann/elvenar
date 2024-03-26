@@ -25,7 +25,7 @@ class HelpBox(GroupBox):
 
     def update(self):
         elapsed_time = time() - Elvenar.LastMotivate
-        self.PBar.setFormat(str(timedelta(seconds=round(self.TDay - elapsed_time))))
+        self.PBar.setFormat(str(timedelta(seconds=round(self.TDay - elapsed_time))) if elapsed_time < self.TDay else '')
         self.PBar.setValue(round(elapsed_time / self.TDay * 100))
         if elapsed_time > self.TDay and not self.Notified:
             send_notification('ready to motivate')
