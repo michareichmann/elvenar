@@ -72,6 +72,12 @@ class Elvenar:
         pass
 
     @staticmethod
+    def pic(*names, ext='png'):
+        lst = list(names)
+        lst[-1] = f'{lst[-1].split(".")[0]}.{ext}'
+        return Elvenar.FigDir.joinpath(*lst)
+
+    @staticmethod
     def reset():
         Elvenar.NIter = 0
         Elvenar.T0 = None
