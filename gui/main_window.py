@@ -2,12 +2,13 @@ from sys import exit as ex
 
 from PyQt5.QtCore import QTimer
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QFontDialog, QAction, QApplication
+from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QFontDialog, QAction, QApplication, QHBoxLayout
 
 from gui.tools import ToolBox, Elvenar
 from gui.motivate import HelpBox
 from gui.utils import *
 from utils.helpers import Dir
+from gui.builder import Builder
 
 
 class Gui(QMainWindow):
@@ -24,14 +25,13 @@ class Gui(QMainWindow):
     def __init__(self):
         super(Gui, self).__init__()
 
+        # GROUP BOXES
+        self.ToolBox = ToolBox()
+        self.HelpBox = HelpBox()
+        self.Builder = Builder()
+
         self.Layout = self.create_layout()
 
-        # SUB-LAYOUTS
-
-        self.ToolBox = ToolBox()
-        self.Layout.addWidget(self.ToolBox)
-        self.HelpBox = HelpBox()
-        self.Layout.addWidget(self.HelpBox)
         self.MenuBar = MenuBar(self)
 
         self.adjustSize()
@@ -45,11 +45,18 @@ class Gui(QMainWindow):
         self.setWindowIcon(QIcon(str(Dir.joinpath('figures', 'icoc.png'))))
         self.setWindowFlags(Qt.WindowStaysOnTopHint)
 
-    def create_layout(self) -> QVBoxLayout:
+    def create_layout(self) -> QHBoxLayout:
         self.configure()
-        layout = QVBoxLayout()
+        layout = QHBoxLayout()
         self.setCentralWidget(QWidget())
         self.centralWidget().setLayout(layout)
+        # tools and motivation
+        t_lay = QVBoxLayout()
+        t_lay.addWidget(self.ToolBox)
+        t_lay.addWidget(self.HelpBox)
+        layout.addLayout(t_lay)
+        # builder
+        layout.addWidget(self.Builder)
         return layout  # noqa
 
     @staticmethod
@@ -71,6 +78,7 @@ class Gui(QMainWindow):
     def update(self):
         self.ToolBox.update()
         self.HelpBox.update()
+        self.Builder.update()
 
 
 class MenuBar(object):
