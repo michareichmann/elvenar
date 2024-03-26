@@ -133,8 +133,7 @@ class Elvenar:
     @staticmethod
     def start_production(pos):
         Elvenar.Mouse.left_click(*pos, wait=1)
-        t_pos = Elvenar.find_tool_time()
-        Elvenar.Keys.press_esc() if t_pos is None else Elvenar.Mouse.left_click(*t_pos)
+        Elvenar.Keys.tap(str(Elvenar.SelectedInd + 1), wait=.2)
         Elvenar.T0 = time()
 
     @staticmethod
@@ -157,7 +156,7 @@ class Elvenar:
             if len(pos) > 0:
                 if collect_at_start or Elvenar.NIter > 0:
                     self.collect(*pos)
-                    sleep(2)
+                    sleep(1)
                 self.start_production(pos[0])
             call(f'wmctrl -ia {active_win}', shell=True)
             sleep(Elvenar.Times[Elvenar.SelectedInd] * 60 - 21)
@@ -193,12 +192,6 @@ class Elvenar:
         except Exception as e:
             print(e)
             return []
-
-    @staticmethod
-    def find_tool_time():
-        box = locate(Elvenar.FigDir.joinpath('tool-times', f'{Elvenar.SelectedInd}.png'), confidence=.8)
-        if box is not None:
-            return box.left + box.width, box.top + box.height
 
     @staticmethod
     def motivate(all_=True):
