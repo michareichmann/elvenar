@@ -9,6 +9,7 @@ from gui.motivate import HelpBox
 from gui.utils import *
 from utils.helpers import Dir
 from gui.builder import Builder
+from gui.goods import GoodsBox
 
 
 class Gui(QMainWindow):
@@ -29,6 +30,7 @@ class Gui(QMainWindow):
         self.ToolBox = ToolBox()
         self.HelpBox = HelpBox()
         self.Builder = Builder()
+        self.GoodsBox = GoodsBox()
 
         self.Layout = self.create_layout()
 
@@ -47,17 +49,22 @@ class Gui(QMainWindow):
 
     def create_layout(self) -> QHBoxLayout:
         self.configure()
-        layout = QHBoxLayout()
-        self.setCentralWidget(QWidget())
-        self.centralWidget().setLayout(layout)
+        layout0 = QVBoxLayout()  # main layout
+        layout1 = QHBoxLayout()  # tools, motivation & builder
+        layout2 = QVBoxLayout()  # tools & motivation
         # tools and motivation
-        t_lay = QVBoxLayout()
-        t_lay.addWidget(self.ToolBox)
-        t_lay.addWidget(self.HelpBox)
-        layout.addLayout(t_lay)
+        layout2.addWidget(self.ToolBox)
+        layout2.addWidget(self.HelpBox)
         # builder
-        layout.addWidget(self.Builder)
-        return layout  # noqa
+        layout1.addLayout(layout2)
+        layout1.addWidget(self.Builder)
+        # goods
+        layout0.addLayout(layout1)
+        layout0.addWidget(self.GoodsBox)
+
+        self.setCentralWidget(QWidget())
+        self.centralWidget().setLayout(layout0)
+        return layout0  # noqa
 
     @staticmethod
     def get_mouse_pos():
