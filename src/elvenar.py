@@ -62,7 +62,7 @@ class Elvenar:
     T0 = None
     Mouse = Mouse()
     Keys = Keys()
-    SelectedInd = 1
+    SelectedInd = 0
     Sound = ON
     Volume = 10
     Paused = False
@@ -72,6 +72,18 @@ class Elvenar:
 
     def __init__(self):
         pass
+
+    @staticmethod
+    def increment(*_a, **_kw):
+        Elvenar.SelectedInd = (Elvenar.SelectedInd + 1) % 6
+
+    @staticmethod
+    def decrement():
+        Elvenar.SelectedInd = max(0, Elvenar.SelectedInd - 1)
+
+    @staticmethod
+    def t_str():
+        return Elvenar.TStrings[Elvenar.SelectedInd]
 
     @staticmethod
     def pic(*names, ext='png'):
