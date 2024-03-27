@@ -86,6 +86,7 @@ class Gui(QMainWindow):
         self.ToolBox.update()
         self.HelpBox.update()
         self.Builder.update()
+        self.GoodsBox.update()
 
 
 class MenuBar(object):
