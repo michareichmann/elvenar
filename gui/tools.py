@@ -29,6 +29,7 @@ class ToolBox(GroupBox):
         self.TCheckBoxes = self.create_t_check_boxes()
         self.InfoLabel = label('x')
         self.ToolLabel = label('0')
+        self.FLabel = self.create_f_label()
 
         self.FarmingThread = FarmingThread(self)
 
@@ -46,6 +47,7 @@ class ToolBox(GroupBox):
                 self.PBar.reset()
         self.InfoLabel.setText(f'{Elvenar.NIter}')
         self.ToolLabel.setText(f'{Elvenar.CollectedTools}')
+        self.FLabel.setText(f'f = {Elvenar.t_str()}')
 
     def format(self):
         ...
@@ -79,8 +81,9 @@ class ToolBox(GroupBox):
     def create_tool_box(self):
         layout = QGridLayout()
         # layout.addWidget(button('test', self.test), 0, 0)
+        layout.addWidget(self.FLabel, 0, 0)
         sound_button = SoundButton(Elvenar.change_sound, Elvenar.FigDir.joinpath('sound.svg'), Elvenar.FigDir.joinpath('sound-off.svg'), size=(20, 20))
-        layout.addWidget(sound_button, 0, 0, 1, 2, CEN)
+        layout.addWidget(sound_button, 0, 1, RIGHT)
         layout.addWidget(self.FarmButton, 1, 0)
         layout.addWidget(self.CollectFarmButton, 2, 0)
         layout.addWidget(PauseButton(Elvenar.pause), 1, 1)
@@ -90,6 +93,12 @@ class ToolBox(GroupBox):
         layout.addWidget(label('Collected:'), 5, 0, RIGHT)
         layout.addWidget(self.ToolLabel, 5, 1, LEFT)
         self.Layout.addLayout(layout)
+
+    @staticmethod
+    def create_f_label():
+        lb = label(f'f = {Elvenar.t_str()}')
+        lb.mousePressEvent = Elvenar.increment
+        return lb
 
     def create_t_selector(self):
         layout = QGridLayout()
