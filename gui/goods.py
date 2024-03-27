@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QHBoxLayout, QProgressBar
 
 from gui.group_box import GroupBox
-from gui.utils import button
+from gui.utils import ResetButton
 from src.utils import send_notification
 from utils.helpers import Dir, time, do_pickle, timedelta
 
@@ -41,4 +41,4 @@ class GoodsBox(GroupBox):
         self.Notified = False
 
     def create_update_button(self):
-        self.Layout.addWidget(button('update', self.reset))
+        self.Layout.addWidget(ResetButton(self.reset))

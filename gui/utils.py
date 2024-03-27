@@ -25,6 +25,8 @@ CEN = Qt.AlignCenter
 ON = True
 OFF = False
 
+FigDir = Path(__file__).resolve().parent.joinpath('figures')
+
 
 class MyWidget(object):
 
@@ -337,3 +339,9 @@ class PauseButton(MyWidget, QPushButton):
     def flick(self):
         self.setText(PauseButton.Text[self.State])
         self.State = not self.State
+
+
+class ResetButton(SvgButton):
+
+    def __init__(self, f, align: Qt.AlignmentFlag = CEN, xpos: int = 0, parent=None):
+        super().__init__(f, FigDir.joinpath('reload.svg'), align=align, xpos=xpos, parent=parent)

@@ -2,7 +2,7 @@ from gui.group_box import GroupBox
 from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QProgressBar
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPainter
-from gui.utils import button
+from gui.utils import ResetButton, CEN
 from src.elvenar import Elvenar
 from utils.helpers import Dir, do_pickle, time, timedelta
 from src.utils import send_notification, t2ts
@@ -49,7 +49,7 @@ class Builder(GroupBox):
         self.adjustSize()
 
     def create_update_button(self):
-        self.Layout.addWidget(button('update', self.update_times, size=-1))
+        self.Layout.addWidget(ResetButton(self.update_times), alignment=CEN)
 
 
 class VPBar(QProgressBar):
