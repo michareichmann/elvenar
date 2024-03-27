@@ -1,5 +1,5 @@
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QGroupBox, QLayout
+from PyQt5.QtWidgets import QGroupBox, QLayout, QHBoxLayout
 from gui.utils import format_widget
 
 
@@ -9,16 +9,22 @@ class GroupBox(QGroupBox):
     Title = 'Group Box'
     Margins = (4, 4, 4, 4)
 
-    def __init__(self):
+    def __init__(self, layout=QHBoxLayout):
         super(GroupBox, self).__init__()
+        self.LayoutClass = layout
 
         self.Widgets, self.Labels, self.Buttons, self.LineEdits = [], [], [], []
-        self.Layout: QLayout | None = None
+        self.Layout = self.create_layout()
         self.configure()
 
     @property
     def used_containers(self):
         return [w for w in [self.Widgets, self.Labels, self.Buttons, self.LineEdits] if len(w)]
+
+    def create_layout(self) -> QLayout:
+        self.setLayout(self.LayoutClass(self))
+        self.set_margins()
+        return self.layout()
 
     def configure(self):
         self.setTitle(self.Title)

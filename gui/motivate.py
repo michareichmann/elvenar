@@ -16,8 +16,8 @@ class HelpBox(GroupBox):
     TDay = 24 * 60 * 60
 
     def __init__(self):
-        super().__init__()
-        self.Layout = self.create_layout()
+        super().__init__(QGridLayout)
+
         self.create_widgets()
         self.PBar = self.create_progress_bar()
 
@@ -30,11 +30,6 @@ class HelpBox(GroupBox):
         if elapsed_time > self.TDay and not self.Notified:
             send_notification('ready to motivate')
             self.Notified = True
-
-    def create_layout(self) -> QGridLayout:
-        self.setLayout(QGridLayout(self))
-        self.set_margins()
-        return self.layout()  # noqa
 
     def create_progress_bar(self) -> QProgressBar:
         pbar = QProgressBar(self)

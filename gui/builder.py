@@ -13,12 +13,11 @@ class Builder(GroupBox):
     Title = 'Builder'
 
     def __init__(self):
-        super().__init__()
+        super().__init__(QVBoxLayout)
 
         self.TFPath = Dir.joinpath('config', 't-finish.pickle')
         self.TFinish = do_pickle(self.TFPath, lambda: [])
 
-        self.Layout = self.create_layout()
         self.PBarLayout = self.create_pbar_layout()
         self.PBars = self.create_pbars()
         self.create_update_button()
@@ -26,11 +25,6 @@ class Builder(GroupBox):
     def update(self):
         for pbar in self.PBars:
             pbar.update()
-
-    def create_layout(self) -> QVBoxLayout:
-        self.setLayout(QVBoxLayout(self))
-        self.set_margins()
-        return self.layout()  # noqa
 
     def create_pbar_layout(self) -> QHBoxLayout:
         layout = QHBoxLayout()

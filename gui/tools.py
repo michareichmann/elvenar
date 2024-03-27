@@ -22,7 +22,7 @@ class ToolBox(GroupBox):
     Height = 22
 
     def __init__(self):
-        super().__init__()
+        super().__init__(QVBoxLayout)
 
         self.FarmButton = button('start', self.farm)
         self.CollectFarmButton = button('coll && start', partial(self.farm, True))
@@ -32,7 +32,6 @@ class ToolBox(GroupBox):
 
         self.FarmingThread = FarmingThread(self)
 
-        self.Layout = self.create_layout()
         self.create_tool_box()
         self.PBar: QProgressBar = self.create_progress_bar()
 
@@ -57,11 +56,6 @@ class ToolBox(GroupBox):
 
     # ----------------------------------
     # region LAYOUT & WIDGETS
-    def create_layout(self) -> QVBoxLayout:
-        self.setLayout(QVBoxLayout(self))
-        self.set_margins()
-        return self.layout()  # noqa
-
     def create_progress_bar(self):
         pbar = QProgressBar(self)
         self.Layout.addWidget(pbar)
