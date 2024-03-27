@@ -98,10 +98,13 @@ class MenuBar(object):
 
     def load(self):
         self.add_menu('File')
-        self.add_menu('Mouse')
         self.add_menu_entry('File', 'Exit', 'Ctrl+Q', close_app, 'Close the Application')
         self.add_menu_entry('File', 'Font', 'Ctrl+F', self.font_choice, 'Open font dialog')
-        self.add_menu_entry('Mouse', 'Position', 'Ctrl+M', Gui.get_mouse_pos, 'Open font dialog')
+        self.add_menu('Mouse')
+        self.add_menu_entry('Mouse', 'Position', 'Ctrl+M', Gui.get_mouse_pos, 'save mouse pos to clipboard')
+        self.add_menu('Select')
+        self.add_menu_entry('Select', 'Increment Interval', 'Ctrl++', Elvenar.increment, 'increment collecting frequency')
+        self.add_menu_entry('Select', 'Decrement Interval', 'Ctrl+-', Elvenar.decrement, 'decrement collecting frequency')
 
     def add_menu(self, name):
         self.Window.statusBar()
