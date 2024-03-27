@@ -62,7 +62,7 @@ class Elvenar:
     T0 = None
     Mouse = Mouse()
     Keys = Keys()
-    SelectedInd = 0
+    SelectedInd = 1
     Sound = ON
     Volume = 10
     Paused = False
@@ -95,7 +95,7 @@ class Elvenar:
 
     @staticmethod
     def activate():
-        box = locate(Elvenar.FigDir.joinpath('guild.png'))
+        box = locate(Elvenar.pic('guild'))
         if box is not None:
             Elvenar.Mouse.left_click(*(box.left - 10, box.top))
         else:
@@ -105,7 +105,7 @@ class Elvenar:
     def go_to_city():
         call('wmctrl -a "Google Chrome"', shell=True)
         sleep(.3)
-        box = locate(Elvenar.FigDir.joinpath('browser-icon.png'), region=(0, 0, 2000, 100), confidence=.7)
+        box = locate(Elvenar.pic('browser-icon'), region=(0, 0, 2000, 100), confidence=.7)
         if box is not None:
             Elvenar.Mouse.left_click(box.left + box.width, box.top + box.height // 2)
         Elvenar.Keys.tap('c', wait=.5)
@@ -199,11 +199,11 @@ class Elvenar:
     def motivate(all_=True):
         v = [1]
         while len(v):
-            v = locate_all(*(Elvenar.FigDir.joinpath(f'hands{i}.png') for i in ['', '-gold']), confidence=.99)
+            v = locate_all(*(Elvenar.pic(f'hands{i}') for i in ['', '-gold']), confidence=.99)
             for pos in [(int(b.left + b.width / 2), int(b.top + b.height / 2)) for b in v]:
                 Elvenar.Mouse.left_click(*pos, wait=.5)
-                for pic in [Elvenar.FigDir.joinpath(f'{i}.png') for i in ['culture', 'money', 'construct']]:
-                    box = locate(pic, confidence=.9)
+                for s in ['culture', 'money', 'construct']:
+                    box = locate(Elvenar.pic(s), confidence=.9)
                     if box is not None:
                         Elvenar.Mouse.left_click(box.left, box.top, wait=.3)
                         break
@@ -223,7 +223,7 @@ class Elvenar:
     def read_tool_count(threshold=170):
         try:
             from pyautogui import screenshot
-            box = locate(Elvenar.FigDir.joinpath('black-tools.png'))
+            box = locate(Elvenar.pic('black-tools'))
             r = np.array([box.left + box.width, box.top, int(2.5 * box.width), box.height]).tolist()
             return NumStr(img2str(screenshot(region=r), threshold, inverted=True, sub='[^KMG0-9.]+'))
         except Exception as err:
@@ -244,7 +244,7 @@ class Elvenar:
     def read_construction_timers():
         from pyautogui import screenshot
         Elvenar.activate()
-        box = locate(Elvenar.FigDir.joinpath('builder.png'))
+        box = locate(Elvenar.pic('builder'), confidence=.9)
         if box is not None:
             Elvenar.Mouse.left_click(*box2pos(box), wait=1)
             regions = [np.array([box.left - box.width * 2.5, box.top, box.width * 2.5, box.height]).astype('i') for box in locate_all(Elvenar.pic('build-t'))]
