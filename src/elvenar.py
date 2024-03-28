@@ -123,12 +123,13 @@ class Elvenar:
         Elvenar.Keys.tap('c', wait=.5)
         Elvenar.Keys.press_esc(wait=.5)
 
-    def zoom_in(self, n=5):
-        self.go_to_city()  # only for testing
-        self.Keys.tap('+', n=n)
+    @staticmethod
+    def zoom_in(n=5):
+        Elvenar.Keys.tap('+', n=n)
 
-    def zoom_out(self, n=5):
-        self.Keys.tap('-', n=n)
+    @staticmethod
+    def zoom_out(n=5):
+        Elvenar.Keys.tap('-', n=n)
 
     def print_mouse_pos(self):
         print('({:1.0f}, {:1.0f})'.format(*self.Mouse.position()))
@@ -154,7 +155,8 @@ class Elvenar:
     def pause():
         Elvenar.Paused = not Elvenar.Paused
 
-    def farm(self, collect_at_start=False):
+    @staticmethod
+    def farm(collect_at_start=False):
         Elvenar.NIter = 0
         Elvenar.CollectedTools = 0
         while True:
@@ -166,12 +168,12 @@ class Elvenar:
                 Elvenar.go_to_city()
                 sleep(8)  # it may take some time until the game refreshes
             Elvenar.activate()
-            pos = self.find_workshops()
+            pos = Elvenar.find_workshops()
             if len(pos) > 0:
                 if collect_at_start or Elvenar.NIter > 0:
-                    self.collect(*pos)
+                    Elvenar.collect(*pos)
                     sleep(1)
-                self.start_production(pos[0])
+                Elvenar.start_production(pos[0])
             call(f'wmctrl -ia {active_win}', shell=True)
             sleep(Elvenar.Times[Elvenar.SelectedInd] * 60 - 21)
             Elvenar.play_sound(Dir.joinpath('audio', 'bells.mp3'))

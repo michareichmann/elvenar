@@ -12,7 +12,6 @@ from src.elvenar import Elvenar
 from utils.helpers import Dir, write_log
 
 FigDir = Dir.joinpath('figures')
-Elvenar = Elvenar()
 
 
 class ToolBox(GroupBox):
@@ -131,7 +130,7 @@ class FarmingThread(QThread):
 
     def run(self):
         try:
-            Elvenar.farm(collect_at_start=FarmingThread.CollectAtStart)
+            Elvenar.farm()
         except Exception as err:
             import traceback
             print(err)
