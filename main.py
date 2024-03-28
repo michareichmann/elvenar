@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-from src.elvenar import Elvenar
 from argparse import ArgumentParser
 import os
 import signal
@@ -30,7 +29,7 @@ if args.gui:
     sys.exit(app.exec_())
 
 else:
+    from src.elvenar import Elvenar
     from PyQt5.QtWidgets import QApplication
     from gui.utils import *
     app = QApplication(['Test'])
-    z = Elvenar()

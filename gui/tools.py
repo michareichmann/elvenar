@@ -26,8 +26,9 @@ class ToolBox(GroupBox):
         self.FarmButton = button('start', self.farm)
         self.CollectFarmButton = button('coll && start', partial(self.farm, True))
         self.TCheckBoxes = self.create_t_check_boxes()
-        self.InfoLabel = label('x')
-        self.ToolLabel = label('0')
+        self.SpeedLabel = label('')
+        self.ToolLabel = label('')
+        self.TRunningLabel = label('')
         self.FLabel = self.create_f_label()
 
         self.FarmingThread = FarmingThread(self)
@@ -44,8 +45,9 @@ class ToolBox(GroupBox):
                 self.PBar.setValue(int(np.round(elapsed_time / duration * 100)))
             else:
                 self.PBar.reset()
-        self.InfoLabel.setText(f'{Elvenar.NIter}')
-        self.ToolLabel.setText(f'{Elvenar.CollectedTools}')
+        self.SpeedLabel.setText(Elvenar.speed_str())
+        self.ToolLabel.setText(str(Elvenar.CollectedTools) if Elvenar.CollectedTools > 0 else '')
+        self.TRunningLabel.setText(Elvenar.running_str())
         self.FLabel.setText(f'f = {Elvenar.t_str()}')
 
     def format(self):
@@ -74,9 +76,6 @@ class ToolBox(GroupBox):
         self.FarmingThread.finished.connect(self.PBar.reset)
         self.FarmingThread.start()
 
-    def test(self):
-        print('hello')
-
     def create_tool_box(self):
         layout = QGridLayout()
         # layout.addWidget(button('test', self.test), 0, 0)
@@ -87,10 +86,12 @@ class ToolBox(GroupBox):
         layout.addWidget(self.CollectFarmButton, 2, 0)
         layout.addWidget(PauseButton(Elvenar.pause), 1, 1)
         layout.addWidget(button('stop', self.FarmingThread.terminate), 2, 1)
-        layout.addWidget(label('Iterations:'), 4, 0, RIGHT)
-        layout.addWidget(self.InfoLabel, 4, 1, LEFT)
-        layout.addWidget(label('Collected:'), 5, 0, RIGHT)
-        layout.addWidget(self.ToolLabel, 5, 1, LEFT)
+        layout.addWidget(label('Collected:'), 4, 0, RIGHT)
+        layout.addWidget(self.ToolLabel, 4, 1, LEFT)
+        layout.addWidget(label('Speed:'), 5, 0, RIGHT)
+        layout.addWidget(self.SpeedLabel, 5, 1, LEFT)
+        layout.addWidget(label('Running:'), 6, 0, RIGHT)
+        layout.addWidget(self.TRunningLabel, 6, 1, LEFT)
         self.Layout.addLayout(layout)
 
     @staticmethod
@@ -130,7 +131,7 @@ class FarmingThread(QThread):
 
     def run(self):
         try:
-            Elvenar.farm()
+            Elvenar.farm(self.CollectAtStart)
         except Exception as err:
             import traceback
             print(err)

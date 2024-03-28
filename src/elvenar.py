@@ -10,7 +10,7 @@ from src.utils import *
 from user_input.keys import Keys
 from user_input.mouse import Mouse
 from utils.classes import NumStr
-from utils.helpers import play, Dir, ON, write_log, Path, do_pickle
+from utils.helpers import play, Dir, ON, write_log, Path, do_pickle, timedelta
 
 
 # ------------------------------
@@ -59,7 +59,9 @@ class Elvenar:
     TStrings = ['5 min', '15 min', '1 hr', '3 hrs', '9 hrs', '1 d']
     NIter = 0
     CollectedTools = 0
-    T0 = None
+    T0 = None       # start of production
+    TStart = None   # start of farming
+    CollectedAtStart = None
     Mouse = Mouse()
     Keys = Keys()
     SelectedInd = 0
@@ -69,9 +71,6 @@ class Elvenar:
 
     LMPath = Dir.joinpath('config', 'last-motivate.pickle')
     LastMotivate = do_pickle(LMPath, time)
-
-    def __init__(self):
-        pass
 
     @staticmethod
     def increment(*_a, **_kw):
@@ -86,6 +85,21 @@ class Elvenar:
         return Elvenar.TStrings[Elvenar.SelectedInd]
 
     @staticmethod
+    def time():
+        return Elvenar.Times[Elvenar.SelectedInd]
+
+    @staticmethod
+    def speed_str() -> str:
+        if Elvenar.TStart is None:
+            return ''
+        t_start = Elvenar.time() * 60 if Elvenar.CollectedAtStart else 0
+        return f'{NumStr(Elvenar.CollectedTools / (t_start + time() - Elvenar.TStart) * 60 ** 2)} / hr'
+
+    @staticmethod
+    def running_str() -> str:
+        return '' if Elvenar.TStart is None else str(timedelta(seconds=round(time() - Elvenar.TStart)))
+
+    @staticmethod
     def pic(*names, ext='png'):
         lst = list(names)
         lst[-1] = f'{lst[-1].split(".")[0]}.{ext}'
@@ -96,6 +110,7 @@ class Elvenar:
         Elvenar.NIter = 0
         Elvenar.T0 = None
         Elvenar.CollectedTools = 0
+        Elvenar.TStart = None
 
     @staticmethod
     def select_time(t: int):
@@ -159,6 +174,8 @@ class Elvenar:
     def farm(collect_at_start=False):
         Elvenar.NIter = 0
         Elvenar.CollectedTools = 0
+        Elvenar.TStart = time()
+        Elvenar.CollectedAtStart = collect_at_start
         while True:
             active_win = getoutput('xprop -root | grep _NET_ACTIVE_WINDOW | head -1 | cut -f5 -d " "')
             if Elvenar.NIter > 0:  # assume that the game is open upon first usage
@@ -204,7 +221,7 @@ class Elvenar:
             pos = np.array([(int(b.left + b.width / 2), int(b.top + b.height)) for b in v])
             pos = pos[np.argsort(np.linalg.norm(pos, axis=1))]  # sort by distance to offspring
             d = np.concatenate([[99], np.linalg.norm(np.diff(pos, axis=0), axis=1)])  # distance between the neighbouring points
-            return pos[d > 5]
+            return pos[d > 30]
         except Exception as e:
             print(e)
             return []
