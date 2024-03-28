@@ -26,7 +26,7 @@ class GoodsBox(GroupBox):
         t = round(self.TProd - (self.TFinish - time()))
         self.PBar.setFormat(str(timedelta(seconds=self.TProd - t)) if t < self.TProd else '')
         self.PBar.setValue(t)
-        if t > self.TProd and not self.Notified:
+        if self.TProd < t < self.TProd + 5 * 60 and not self.Notified:
             send_notification('goods are ready')
             self.Notified = True
 

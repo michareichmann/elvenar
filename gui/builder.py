@@ -77,7 +77,7 @@ class VPBar(QProgressBar):
         time_left = self.TFinish - time()
         self.setFormat(str(timedelta(seconds=round(time_left))) if time_left > 0 else '')
         self.setValue(round(100 * (1 - time_left / self.Duration)))
-        if time_left < 0 and not self.Notified:
+        if -5 * 60 < time_left < 0 and not self.Notified:
             send_notification('building finished')
             self.Notified = True
 
