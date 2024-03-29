@@ -26,8 +26,10 @@ CEN = Qt.AlignCenter
 ON = True
 OFF = False
 
-FigDir = Path(__file__).resolve().parent.joinpath('figures')
-TmpDir = Path(__file__).resolve().parent.joinpath('tmp')
+Dir = Path(__file__).resolve().parent
+FigDir = Dir.joinpath('figures')
+TmpDir = Dir.joinpath('tmp')
+SoundDir = Dir.joinpath('sounds')
 
 
 class MyWidget(object):

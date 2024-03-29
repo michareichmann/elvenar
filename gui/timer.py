@@ -1,9 +1,9 @@
 from PyQt5.QtWidgets import QHBoxLayout, QProgressBar
 
 from gui.group_box import GroupBox
-from gui.utils import TmpDir, SvgButton, FigDir, QLineEdit
+from gui.utils import TmpDir, SvgButton, FigDir, QLineEdit, SoundDir
 from src.utils import send_notification
-from utils.helpers import do_pickle, timedelta, np, time, do, do_nothing, isfloat, isint
+from utils.helpers import do_pickle, timedelta, np, time, do, do_nothing, isfloat, isint, play
 
 
 def str2time(s: str) -> int:
@@ -34,6 +34,7 @@ class Timer(GroupBox):
             self.PBar.setFormat(str(timedelta(seconds=round(t_left))) if t_left > 0 else 'Done')
             if -5 * 60 < t_left < 0 and not self.Notified:
                 send_notification(f'{timedelta(seconds=self.Duration)} are over')
+                play(SoundDir.joinpath('bells0'), volume=20)
                 self.Notified = True
         else:
             self.PBar.reset()
