@@ -32,7 +32,7 @@ class Gui(QMainWindow):
         self.HelpBox = HelpBox()
         self.Builder = Builder()
         self.GoodsBox = GoodsBox()
-        self.Timer = Timer()
+        self.TimerBox = Timer()
 
         self.Layout = self.create_layout()
 
@@ -63,7 +63,7 @@ class Gui(QMainWindow):
         # goods
         layout0.addLayout(layout1)
         layout0.addWidget(self.GoodsBox)
-        layout0.addWidget(self.Timer)
+        layout0.addWidget(self.TimerBox)
 
         self.setCentralWidget(QWidget())
         self.centralWidget().setLayout(layout0)
@@ -90,6 +90,7 @@ class Gui(QMainWindow):
         self.HelpBox.update()
         self.Builder.update()
         self.GoodsBox.update()
+        self.TimerBox.update()
 
 
 class MenuBar(object):
