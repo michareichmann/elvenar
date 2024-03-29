@@ -11,6 +11,7 @@ from matplotlib.colors import cnames
 
 from xml.etree import ElementTree
 from copy import deepcopy
+from typing import Tuple
 
 
 FontSize = 13
@@ -187,8 +188,11 @@ class MyAbstractButton(QAbstractButton):
 
 
 class SvgButton(MyAbstractButton):
-    def __init__(self, f, pic: Path, fr=None, align: Qt.AlignmentFlag = CEN, xpos: int = 0, parent=None):
+
+    def __init__(self, f, pic: Path, fr=None, size: Tuple[int, int] = None, align: Qt.AlignmentFlag = CEN, xpos: int = 0, parent=None):
         super(SvgButton, self).__init__(align, xpos, parent)
+
+        self.Size = QSize(14, 14) if size is None else QSize(*size)
         self.PicName = pic.name
         self.Pic = MySvg(pic)
 
@@ -202,7 +206,7 @@ class SvgButton(MyAbstractButton):
         painter.end()
 
     def sizeHint(self):
-        return QSize(14, 14)
+        return self.Size
 
 
 class PicButton(MyAbstractButton):
