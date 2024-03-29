@@ -137,7 +137,7 @@ def style_sheet(dic):
 class MySvg:
 
     def __init__(self, path: Path):
-        self.Path = path
+        self.Path = path.with_suffix('.svg')
         self.Str = self.load()
 
     def load(self):
@@ -145,8 +145,11 @@ class MySvg:
             return ''.join(f.readlines())
 
     def set_fill_color(self, color: str):
-        s = self.Str.find('fill')
-        self.Str = self.Str.replace(self.Str[s:s + 14], f'fill="{color if color.startswith("#") else cnames[color]}"')
+        color = color if color.startswith("#") else cnames[color]
+        s0 = self.Str.find('fill=')
+        self.Str = self.Str.replace(self.Str[s0:s0 + 14], f'fill="{color}"') if s0 != -1 else self.Str
+        s1 = self.Str.find('fill:')
+        self.Str = self.Str.replace(self.Str[s1:s1 + 12], f'fill:{color}') if s1 != -1 else self.Str
 
     def render(self, painter: QPainter):
         QtSvg.QSvgRenderer(bytes(self.Str, 'utf-8')).render(painter)
