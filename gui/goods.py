@@ -1,16 +1,16 @@
 from PyQt5.QtWidgets import QHBoxLayout, QProgressBar
 
 from gui.group_box import GroupBox
-from gui.utils import ResetButton
+from gui.utils import ResetButton, TmpDir
 from src.utils import send_notification
-from utils.helpers import Dir, time, do_pickle, timedelta
+from utils.helpers import time, do_pickle, timedelta
 
 
 class GoodsBox(GroupBox):
 
     Title = 'Goods'
     TProd = 3 * 60 ** 2  # 3 hrs
-    TFPath = Dir.joinpath('config', 'goods-finished.pickle')
+    TFPath = TmpDir.joinpath('goods-finished.pickle')
 
     def __init__(self):
         super().__init__(QHBoxLayout)

@@ -26,6 +26,7 @@ ON = True
 OFF = False
 
 FigDir = Path(__file__).resolve().parent.joinpath('figures')
+TmpDir = Path(__file__).resolve().parent.joinpath('tmp')
 
 
 class MyWidget(object):

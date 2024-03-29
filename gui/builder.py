@@ -1,22 +1,23 @@
-from gui.group_box import GroupBox
-from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QProgressBar
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPainter
-from gui.utils import ResetButton, CEN
+from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QProgressBar
+
+from gui.group_box import GroupBox
+from gui.utils import ResetButton, CEN, TmpDir
 from src.elvenar import Elvenar
-from utils.helpers import Dir, do_pickle, time, timedelta
 from src.utils import send_notification, t2ts
+from utils.helpers import do_pickle, time, timedelta
 
 
 class Builder(GroupBox):
 
     Title = 'Builder'
 
+    PicklePath = TmpDir.joinpath('buildings-finished.pickle')
+    TFinish = do_pickle(PicklePath, lambda: [])
+
     def __init__(self):
         super().__init__(QVBoxLayout)
-
-        self.TFPath = Dir.joinpath('config', 't-finish.pickle')
-        self.TFinish = do_pickle(self.TFPath, lambda: [])
 
         self.PBarLayout = self.create_pbar_layout()
         self.PBars = self.create_pbars()
@@ -42,7 +43,7 @@ class Builder(GroupBox):
         return [t2ts(t) for t in Elvenar.read_construction_timers()]
 
     def update_times(self):
-        self.TFinish = do_pickle(self.TFPath, self.read_times, redo=True)
+        self.TFinish = do_pickle(self.PicklePath, self.read_times, redo=True)
         for pbar in self.PBars:
             self.PBarLayout.removeWidget(pbar)
         self.PBars = self.create_pbars()

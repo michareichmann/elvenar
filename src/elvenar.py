@@ -69,9 +69,6 @@ class Elvenar:
     Volume = 10
     Paused = False
 
-    LMPath = Dir.joinpath('config', 'last-motivate.pickle')
-    LastMotivate = do_pickle(LMPath, time)
-
     @staticmethod
     def increment(*_a, **_kw):
         Elvenar.SelectedInd = (Elvenar.SelectedInd + 1) % 6
