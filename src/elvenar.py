@@ -10,7 +10,7 @@ from src.utils import *
 from user_input.keys import Keys
 from user_input.mouse import Mouse
 from utils.classes import NumStr
-from utils.helpers import play, Dir, ON, write_log, Path, do_pickle, timedelta
+from utils.helpers import play, Dir, ON, write_log, Path, timedelta
 
 
 # ------------------------------
@@ -240,12 +240,6 @@ class Elvenar:
             else:
                 sleep(.5)
                 Elvenar.Keys.press_right(wait=2)
-        if all_:
-            Elvenar.save_last_motivate()
-
-    @staticmethod
-    def save_last_motivate():
-        Elvenar.LastMotivate = do_pickle(Elvenar.LMPath, lambda: time() - 60 * 60, redo=True)
 
     @staticmethod
     def read_tool_count(threshold=170):

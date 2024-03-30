@@ -91,6 +91,7 @@ class Gui(QMainWindow):
         self.Builder.update()
         self.GoodsBox.update()
         self.TimerBox.update()
+        self.adjustSize()
 
 
 class MenuBar(object):

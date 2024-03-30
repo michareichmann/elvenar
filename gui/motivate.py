@@ -42,7 +42,7 @@ class HelpBox(GroupBox):
     def help_all(self):
         Elvenar.motivate(all_=True)
         self.Notified = False
-        do_pickle(self.PicklePath, lambda: time() - 60 * 60, redo=True)
+        self.LastMotivate = do_pickle(self.PicklePath, lambda: time() - 60 * 60, redo=True)
 
     def create_widgets(self):
         self.Layout.addWidget(button('help', partial(Elvenar.motivate, all_=False)), 0, 0)
