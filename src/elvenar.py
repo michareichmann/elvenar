@@ -65,21 +65,22 @@ class Elvenar:
     Mouse = Mouse()
     Keys = Keys()
     SelectedInd = 0
+    UpdateInd = 0
     Sound = ON
     Volume = 10
     Paused = False
 
     @staticmethod
     def increment(*_a, **_kw):
-        Elvenar.SelectedInd = (Elvenar.SelectedInd + 1) % 6
+        Elvenar.UpdateInd = (Elvenar.UpdateInd + 1) % 6
 
     @staticmethod
     def decrement():
-        Elvenar.SelectedInd = max(0, Elvenar.SelectedInd - 1)
+        Elvenar.UpdateInd = max(0, Elvenar.UpdateInd - 1)
 
     @staticmethod
     def t_str():
-        return Elvenar.TStrings[Elvenar.SelectedInd]
+        return Elvenar.TStrings[Elvenar.UpdateInd]
 
     @staticmethod
     def time():
@@ -111,7 +112,7 @@ class Elvenar:
 
     @staticmethod
     def select_time(t: int):
-        Elvenar.SelectedInd = t
+        Elvenar.UpdateInd = t
 
     @staticmethod
     def change_sound():
@@ -159,6 +160,7 @@ class Elvenar:
 
     @staticmethod
     def start_production(pos):
+        Elvenar.SelectedInd = Elvenar.UpdateInd
         Elvenar.Mouse.left_click(*pos, wait=1)
         Elvenar.Keys.tap(str(Elvenar.SelectedInd + 1), wait=.2)
         Elvenar.T0 = time()
